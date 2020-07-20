@@ -215,9 +215,9 @@ export default {
               "note": data.remark
               }
               )}
+          this.tableData = table_data;
           // 同时获取数据总数
           this.tableTotal = response.data.total
-          this.tableData = table_data;
           }
       })
     },
