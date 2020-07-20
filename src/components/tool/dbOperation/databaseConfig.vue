@@ -113,21 +113,6 @@ export default {
   inject: ['reload'],
 
   methods: {
-    editData(row) {
-      // row为选择行的内容，即list中该行数据
-      console.log(row);
-      var data = {
-              "name": row.name,
-              "ip": row.ip,
-              "port": row.port,
-              "username": row.username,
-              "password": '',
-              "note": row.note
-              };
-      this.form = data
-      // 为每行数据赋值，为编辑提交时获取id
-      this.tableRow = row
-    },
     closeDialog(){
       // 实现局部刷新
       this.reload()
@@ -184,6 +169,22 @@ export default {
       this.form = {'name': '','ip': '','port': '','username': '','password': '','note': ''};
     },
 
+    editData(row) {
+      // row为选择行的内容，即list中该行数据
+      console.log(row);
+      var data = {
+              "name": row.name,
+              "ip": row.ip,
+              "port": row.port,
+              "username": row.username,
+              "password": '',
+              "note": row.note
+              };
+      this.form = data
+      // 为每行数据赋值，为编辑提交时获取id
+      this.tableRow = row
+    },
+    
     deleteData (row){
       toolDBOperDelConfig(row.id).then((response) => {
           response = response.data;
