@@ -1,0 +1,302 @@
+<template>
+  <div>
+    <head-top></head-top>
+    <div class="page">
+      <div class="title">
+        <div class="title_text">数据库列表</div>
+        <el-row style="text-align:right;">
+          <el-button style="width: 100px" @click="openDialog = true;DialogTitle = '添加数据库'" type="primary">添加</el-button>
+        </el-row>
+      </div>
+      <div style="margin-top: 2%"></div>
+      <div class="table">
+        <el-table
+          border
+          :data="tableData"
+          :stripe="true"
+          style="width: 100%">
+          <el-table-column
+            fixed
+            prop="name"
+            label="数据库名称"
+            width="200">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="数据库地址"
+            width="200">
+          </el-table-column>
+          <el-table-column
+            prop="username"
+            label="账号">
+          </el-table-column>
+          <el-table-column
+            prop="note"
+            label="说明">
+          </el-table-column>
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="100">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="editData(scope.row);openDialog = true;DialogTitle = '编辑数据库'">编辑</el-button>
+              <el-popconfirm @onConfirm="deleteData(scope.row)"  title="确定删除该数据库吗？">
+                <el-button type="text" size="small" slot="reference">删除</el-button>
+              </el-popconfirm>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div style="margin-top: 1%"></div>
+        <div class="block" style="text-align:right;">
+          <el-pagination
+            @current-change="getDataPageChange"
+            layout="total, prev, pager, next"
+            :page-size="10"
+            :total="tableTotal">
+          </el-pagination>
+        </div>
+      </div>
+      <div class="box">
+        <el-dialog
+          :title="DialogTitle"
+          width=550px
+          :close-on-click-modal="false"
+          :before-close="closeDialog"
+          :visible.sync="openDialog">
+          <div class="box_form">
+          <el-form :model="form" :rules="rules" ref="form" label-width="70px">
+            <el-form-item label="名称" prop="name">
+              <el-input v-model="form.name" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="IP地址" prop="ip">
+              <el-input v-model="form.ip" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="端口号" prop="port">
+              <el-input v-model.number="form.port" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="账号" prop="username">
+              <el-input v-model="form.username" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+              <el-input v-model="form.password" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="说明" prop="note">
+              <el-input
+                type="textarea"
+                :rows="3"
+                placeholder="请输入说明内容"
+                v-model="form.note"
+                autocomplete="off">
+              </el-input>
+            </el-form-item>
+          </el-form>
+          </div>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="openDialog = false;resetForm('form')">取 消</el-button>
+            <el-button type="primary" @click="submitForm(form)">确 定</el-button>
+          </div>
+        </el-dialog>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import headTop from '../../head'
+import {toolDBOperGetConfigList, toolDBOperAddConfig, toolDBOperUpdateConfig, toolDBOperDelConfig} from '../../../api'
+
+export default {
+  name: "operationConfigs",
+  components: {
+    headTop
+  },
+  inject: ['reload'],
+
+  methods: {
+    editData(row) {
+      // row为选择行的内容，即list中该行数据
+      console.log(row);
+      var data = {
+              "name": row.name,
+              "ip": row.ip,
+              "port": row.port,
+              "username": row.username,
+              "password": '',
+              "note": row.note
+              };
+      this.form = data
+      // 为每行数据赋值，为编辑提交时获取id
+      this.tableRow = row
+    },
+    closeDialog(){
+      // 实现局部刷新
+      this.reload()
+    },
+
+    submitForm(formName) {
+      this.$refs['form'].validate((valid) => {
+        // 根据表单格式验证规则，触发验证行为，valid为验证结果
+        if (valid) {
+          if (this.DialogTitle == '添加数据库'){
+            toolDBOperAddConfig(formName.name, formName.ip, formName.port, formName.username, formName.password, formName.note).then((response) => {
+              response = response.data;
+              console.log(response)
+              if (response.success == true) {
+                // 创建成功后刷新页面
+                this.reload()
+                this.$message({type: 'success',message: '操作成功'});
+              }
+              }).catch(err => {
+                // 对于200之外的错误status，需要添加err获取接口数据
+                this.$message({type: 'error',message: err.response.data.error_message})
+                })
+          } else {
+            toolDBOperUpdateConfig(this.tableRow.id, formName.name, formName.ip, formName.port, formName.username, formName.password, formName.note).then((response) => {
+              response = response.data;
+              console.log(response)
+              if (response.success == true) {
+                this.openDialog = false;
+                // 编辑成功后，仍停留在该页，需要使用当前页码获取数据，刷新显示
+                this.getDataPageChange (this.val)
+                this.submitUpdateForm('form')
+              }
+              }).catch(err => {
+                this.$message({type: 'error',message: err.response.data.error_message})
+                })
+          }
+        } else {
+          return false;
+        }
+      })
+      
+    },
+    submitUpdateForm(formName) {
+      // 重置表单，此处主要作用为清除rules验证结果信息
+      this.$refs[formName].resetFields();
+      this.$message({type: 'success',message: '操作成功'});
+      // 恢复form表单为空,重新赋值不能写为单独的方法，只能直接赋值
+      this.form = {'name': '','ip': '','port': '','username': '','password': '','note': ''};
+    },
+    
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+      this.$message({type: 'info',message: '取消操作'});
+      this.form = {'name': '','ip': '','port': '','username': '','password': '','note': ''};
+    },
+
+    deleteData (row){
+      toolDBOperDelConfig(row.id).then((response) => {
+          response = response.data;
+          if (response.success === true) {
+          this.openDialog = false;
+          // 删除成功后刷新页面
+          this.reload()
+        }
+      })
+    },
+
+    getData (size, page) {
+      toolDBOperGetConfigList(size, page).then((response) => {
+        response = response.data;
+        console.log(response)
+        if (response.success === true) {
+          // 创建并定义table_data为list
+          var table_data = new Array()
+          // 从接口获取的list数据，循环获取进行处理后，写入table_data中
+          for(var i=0;i<response.data.content.length;i++){
+            var data = response.data.content[i]
+            table_data.push({
+              "id": data.id,
+              "name": data.name,
+              "ip": data.ip,
+              "port": data.port,
+              "address": data.ip + ":" + String(data.port),
+              "username": data.username,
+              "note": data.remark
+              }
+              )}
+          // 同时获取数据总数
+          this.tableTotal = response.data.total
+          this.tableData = table_data;
+          }
+      })
+    },
+    getDataPageChange (val) {
+      // 获取当前页码
+      this.val = val
+      this.getData(10, val)
+    }
+  },
+    // 进入/刷新页面默认执行的函数，必须以mounted命名
+    mounted () {
+      this.getData(10, 1)
+    },
+  
+
+  data() {
+    return {
+      // 列表数据初始值
+      tableData: [],
+      // 列表总数初始值
+      tableTotal: 0,
+      // 列表每行数据初始值
+      tableRow: '',
+      // 添加/编辑弹窗默认关闭
+      openDialog: false,
+      // 添加/编辑弹窗title初始值
+      DialogTitle: '',
+      // 添加/编辑弹窗表单初始值
+      form:{
+        name: '',
+        ip: '',
+        port: '',
+        username: '',
+        password: '',
+        note: '',
+      },
+      rules: {
+        name: [
+          {required: true, message: '名称不能为空'},
+          {max: 64, message: '最多可输入64个字符'}
+          ],
+        ip: [
+          {required: true, message: 'IP地址不能为空'},
+          {max: 64, message: '最多可输入64个字符'}
+          ],
+        port: [
+          { required: true, message: '端口号不能为空'},
+          { type: 'number', message: '端口号必须为数字'}
+          ],
+        username: [
+          {required: true, message: '账号不能为空'},
+          {max: 64, message: '最多可输入64个字符'}
+          ],
+        password: [
+          {required: true, message: '密码不能为空'},
+          {max: 64, message: '最多可输入64个字符'}]
+      }
+      }
+    }
+  }
+</script>
+
+<style>
+.page {
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 5%;
+}
+
+.title_text {
+  position:absolute;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.box_form {
+  margin-left: 85px;
+  margin-right: 105px;
+  margin-top: 20px
+}
+
+</style>
