@@ -3,10 +3,8 @@ import Router from 'vue-router'
 import Index from '../components/index'
 import Blank from '../components/blank'
 import DBOperation from '../components/tool/dbOperation/operation'
-import DBConfig from '../components/tool/dbOperation/databaseConfig'
 import DBOperationConfig from '../components/tool/dbOperation/operationConfig'
-// import ediTe from '../components/edite'
-// import dataAnaly from '../components/dataAnaly'
+import DBOperationDBConfig from '../components/tool/dbOperation/databaseConfig'
 
 Vue.use(Router)
 
@@ -46,7 +44,7 @@ export default new Router({
       },
       {
         path: 'database-configs',
-        component: DBConfig,
+        component: DBOperationDBConfig,
         meta: ['测试工具', 'DB操作', "数据库配置"]
       }
     ]},
@@ -56,7 +54,7 @@ export default new Router({
       children: [
         {
           path: 'mock-configs',
-          component: DBConfig,
+          component: DBOperationDBConfig,
           meta: ['测试工具', 'Mock配置', "Mock配置"]
         }
     ]},

@@ -5,43 +5,38 @@
       <div class="title">
         <div class="title_text">操作列表</div>
         <el-row style="text-align:right;">
-          <el-button style="width: 100px" @click="addBox = true;box_title = '添加操作'" type="primary">添加</el-button>
+          <el-button style="width: 100px" @click="openDialog = true;DialogTitle = '添加操作'" type="primary">添加</el-button>
         </el-row>
       </div>
       <div style="margin-top: 2%"></div>
       <div class="table">
         <el-table
-          :data="tableData"
           border
+          :data="tableData"
           :stripe="true"
           style="width: 100%">
           <el-table-column
             fixed
-            prop="number"
-            label="序号"
-            width="100">
-          </el-table-column>
-          <el-table-column
             prop="name"
             label="操作名称"
             width="200">
           </el-table-column>
           <el-table-column
             prop="sql"
-            label="sql语句"
-            width="350">
+            label="sql语句">
           </el-table-column>
           <el-table-column
-            prop="note"
-            label="说明">
+            prop="remark"
+            label="说明"
+            width="200">
           </el-table-column>
           <el-table-column
             fixed="right"
             label="操作"
             width="100">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row);addBox = true;box_title = '编辑操作'" type="text" size="small">编辑</el-button>
-              <el-popconfirm title="确定删除该操作吗？">
+              <el-button type="text" size="small" @click="editData(scope.row);openDialog = true;DialogTitle = '编辑操作'">编辑</el-button>
+              <el-popconfirm @onConfirm="deleteData(scope.row)"  title="确定删除该操作吗？">
                 <el-button type="text" size="small" slot="reference">删除</el-button>
               </el-popconfirm>
             </template>
@@ -50,30 +45,26 @@
         <div style="margin-top: 1%"></div>
         <div class="block" style="text-align:right;">
           <el-pagination
-            :page-size="pagination.size"
+            @current-change="getDataPageChange"
             layout="total, prev, pager, next"
-            :total="pagination.total">
+            :page-size="10"
+            :total="tableTotal">
           </el-pagination>
         </div>
       </div>
       <div class="box">
         <el-dialog
-          :title="box_title"
+          :title="DialogTitle"
           width=550px
-          :visible.sync="addBox"
-          :before-close="closeDialog">
+          :close-on-click-modal="false"
+          :before-close="closeDialog"
+          :visible.sync="openDialog">
           <div class="box_form">
-          <el-form :model="form" label-width='80px'>
-            <el-form-item
-              label="名称"
-              prop="name"
-              :rules="{required: true,message: '名称不能为空'}">
+          <el-form :model="form" :rules="rules" ref="form" label-width="70px">
+            <el-form-item label="名称" prop="name">
               <el-input v-model="form.name" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item
-              label="sql语句"
-              prop="sql"
-              :rules="{required: true,message: 'sql语句不能为空'}">
+            <el-form-item label="sql语句" prop="sql">
               <el-input
                 type="textarea"
                 :rows="3"
@@ -82,20 +73,20 @@
                 autocomplete="off">
               </el-input>
             </el-form-item>
-            <el-form-item label="说明" prop="note">
+            <el-form-item label="说明" prop="remark">
               <el-input
                 type="textarea"
                 :rows="3"
                 placeholder="请输入说明内容"
-                v-model="form.note"
+                v-model="form.remark"
                 autocomplete="off">
               </el-input>
             </el-form-item>
           </el-form>
           </div>
           <div slot="footer" class="dialog-footer">
-            <el-button @click="addBox = false; resetForm('form')">取 消</el-button>
-            <el-button type="primary" @click="addBox = false">确 定</el-button>
+            <el-button @click="openDialog = false;resetForm('form')">取 消</el-button>
+            <el-button type="primary" @click="submitForm(form)">确 定</el-button>
           </div>
         </el-dialog>
       </div>
@@ -105,6 +96,7 @@
 
 <script>
 import headTop from '../../head'
+import {toolDBOperGetOperList, toolDBOperAddOper, toolDBOperUpdateOper, toolDBOperDelOper} from '../../../api'
 
 export default {
   name: "operationConfigs",
@@ -114,78 +106,155 @@ export default {
   inject: ['reload'],
 
   methods: {
-    handleClick(row) {
-      console.log(row);
-    },
     closeDialog(){
+      // 实现局部刷新
       this.reload()
+    },
+
+    getData (size, page) {
+      toolDBOperGetOperList(size, page).then((response) => {
+        response = response.data;
+        console.log(response)
+        if (response.success === true) {
+          // 创建并定义table_data为list
+          var table_data = new Array()
+          // 当获取到list为空时，table_data为[]
+          if (response.data.content == undefined){
+            table_data = []
+          }else{
+            // 从接口获取的list数据，循环获取进行处理后，写入table_data中
+            for(var i=0;i<response.data.content.length;i++){
+              var data = response.data.content[i]
+              table_data.push({
+                "id": data.id,
+                "name": data.name,
+                "sql": data.sql,
+                "remark": data.remark
+              }
+            )}
+          }
+          this.tableData = table_data;
+          // 同时获取数据总数
+          this.tableTotal = response.data.total
+        }
+      }).catch(err => {
+        // 对于200之外的错误status，需要添加err获取接口数据
+        this.$message({type: 'error',message: err.response.data.error_message})
+        })
+    },
+    getDataPageChange (val) {
+      // 获取当前页码
+      this.val = val
+      this.getData(10, val)
+    },
+
+    deleteData (row){
+      toolDBOperDelOper(row.id).then((response) => {
+          response = response.data;
+          if (response.success === true) {
+          this.openDialog = false;
+          // 删除成功后刷新页面
+          this.reload()
+        }
+      })
+    },
+
+    editData(row) {
+      // row为选择行的内容，即list中该行数据
+      console.log(row);
+      var data = {
+              "name": row.name,
+              "sql": row.sql,
+              "remark": row.remark
+              };
+      this.form = data
+      // 为每行数据赋值，为编辑提交时获取id
+      this.tableRow = row
+    },
+
+    submitForm(formName) {
+      this.$refs['form'].validate((valid) => {
+        // 根据表单格式验证规则，触发验证行为，valid为验证结果
+        if (valid) {
+          if (this.DialogTitle == '添加操作'){
+            toolDBOperAddOper(formName.name, formName.sql, formName.remark).then((response) => {
+              response = response.data;
+              console.log(response)
+              if (response.success == true) {
+                // 创建成功后刷新页面
+                this.reload()
+                this.$message({type: 'success',message: '操作成功'});
+              }
+              }).catch(err => {
+                // 对于200之外的错误status，需要添加err获取接口数据
+                this.$message({type: 'error',message: err.response.data.error_message})
+                })
+          } else {
+            toolDBOperUpdateOper(this.tableRow.id, formName.name, formName.sql, formName.remark).then((response) => {
+              response = response.data;
+              console.log(response)
+              if (response.success == true) {
+                this.openDialog = false;
+                // 编辑成功后，仍停留在该页，需要使用当前页码获取数据，刷新显示
+                this.getDataPageChange (this.val)
+                this.submitUpdateForm('form')
+              }
+              }).catch(err => {
+                this.$message({type: 'error',message: err.response.data.error_message})
+                })
+          }
+        } else {
+          return false;
+        }
+      })
+    },
+    submitUpdateForm(formName) {
+      // 重置表单，此处主要作用为清除rules验证结果信息
+      this.$refs[formName].resetFields();
+      this.$message({type: 'success',message: '操作成功'});
+      // 恢复form表单为空,重新赋值不能写为单独的方法，只能直接赋值
+      this.form = {'name': '','sql': '','remark': ''};
+    },
+    
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+      this.$message({type: 'info',message: '取消操作'});
+      this.form = {'name': '','sql': '','remark': ''};
     }
   },
+    // 进入/刷新页面默认执行的钩子函数
+    mounted () {
+      this.getData(10, 1)
+    },
+  
 
   data() {
     return {
-      tableData: [{
-        number: '1',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }, {
-        number: '2',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }, {
-        number: '3',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }, {
-        number: '4',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }, {
-        number: '5',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }, {
-        number: '6',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }, {
-        number: '7',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }, {
-        number: '8',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }, {
-        number: '9',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }, {
-        number: '10',
-        name: '王小虎',
-        sql: '上海普陀区',
-        note: 'wangxiaohu'
-      }],
-      addBox: false,
-      // visible: false,
-      box_title: '',
+      // 列表数据初始值
+      tableData: [],
+      // 列表总数初始值
+      tableTotal: 0,
+      // 列表每行数据初始值
+      tableRow: '',
+      // 添加/编辑弹窗默认关闭
+      openDialog: false,
+      // 添加/编辑弹窗title初始值
+      DialogTitle: '',
+      // 添加/编辑弹窗表单初始值
       form:{
         name: '',
         sql: '',
-        note: ''
+        remark: ''
       },
-      pagination:{
-        size: 10,
-        total: 88
+      rules: {
+        name: [
+          {required: true, message: '名称不能为空'},
+          {max: 64, message: '最多可输入64个字符'}
+          ],
+        sql: 
+          {required: true, message: 'sql语句不能为空'},
+        remark: 
+          {required: true, message: '说明不能为空'}
       }
       }
     }
@@ -210,4 +279,5 @@ export default {
   margin-right: 105px;
   margin-top: 20px
 }
+
 </style>

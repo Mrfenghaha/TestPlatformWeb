@@ -23,16 +23,17 @@
           </el-table-column>
           <el-table-column
             prop="address"
-            label="数据库地址"
-            width="200">
+            label="数据库地址">
           </el-table-column>
           <el-table-column
             prop="username"
-            label="账号">
+            label="账号"
+            width="150">
           </el-table-column>
           <el-table-column
-            prop="note"
-            label="说明">
+            prop="remark"
+            label="说明"
+            width="200">
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -80,12 +81,12 @@
             <el-form-item label="密码" prop="password">
               <el-input v-model="form.password" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="说明" prop="note">
+            <el-form-item label="说明" prop="remark">
               <el-input
                 type="textarea"
                 :rows="3"
                 placeholder="请输入说明内容"
-                v-model="form.note"
+                v-model="form.remark"
                 autocomplete="off">
               </el-input>
             </el-form-item>
@@ -106,7 +107,7 @@ import headTop from '../../head'
 import {toolDBOperGetConfigList, toolDBOperAddConfig, toolDBOperUpdateConfig, toolDBOperDelConfig} from '../../../api'
 
 export default {
-  name: "operationConfigs",
+  name: "databaseConfigs",
   components: {
     headTop
   },
@@ -118,12 +119,76 @@ export default {
       this.reload()
     },
 
+    getData (size, page) {
+      toolDBOperGetConfigList(size, page).then((response) => {
+        response = response.data;
+        console.log(response)
+        if (response.success === true) {
+          // 创建并定义table_data为list
+          var table_data = new Array()
+          // 当获取到list为空时，table_data为[]
+          if (response.data.content == undefined){
+            table_data = []
+          }else{
+            // 从接口获取的list数据，循环获取进行处理后，写入table_data中
+            for(var i=0;i<response.data.content.length;i++){
+              var data = response.data.content[i]
+              table_data.push({
+                "id": data.id,
+                "name": data.name,
+                "ip": data.ip,
+                "port": data.port,
+                "address": data.ip + ":" + String(data.port),
+                "username": data.username,
+                "remark": data.remark
+              }
+            )}
+          }
+          this.tableData = table_data;
+          // 同时获取数据总数
+          this.tableTotal = response.data.total
+        }
+      })
+    },
+    getDataPageChange (val) {
+      // 获取当前页码
+      this.val = val
+      this.getData(10, val)
+    },
+
+    deleteData (row){
+      toolDBOperDelConfig(row.id).then((response) => {
+          response = response.data;
+          if (response.success === true) {
+          this.openDialog = false;
+          // 删除成功后刷新页面
+          this.reload()
+        }
+      })
+    },
+
+    editData(row) {
+      // row为选择行的内容，即list中该行数据
+      console.log(row);
+      var data = {
+              "name": row.name,
+              "ip": row.ip,
+              "port": row.port,
+              "username": row.username,
+              "password": '',
+              "remark": row.remark
+              };
+      this.form = data
+      // 为每行数据赋值，为编辑提交时获取id
+      this.tableRow = row
+    },
+
     submitForm(formName) {
       this.$refs['form'].validate((valid) => {
         // 根据表单格式验证规则，触发验证行为，valid为验证结果
         if (valid) {
           if (this.DialogTitle == '添加数据库'){
-            toolDBOperAddConfig(formName.name, formName.ip, formName.port, formName.username, formName.password, formName.note).then((response) => {
+            toolDBOperAddConfig(formName.name, formName.ip, formName.port, formName.username, formName.password, formName.remark).then((response) => {
               response = response.data;
               console.log(response)
               if (response.success == true) {
@@ -136,7 +201,7 @@ export default {
                 this.$message({type: 'error',message: err.response.data.error_message})
                 })
           } else {
-            toolDBOperUpdateConfig(this.tableRow.id, formName.name, formName.ip, formName.port, formName.username, formName.password, formName.note).then((response) => {
+            toolDBOperUpdateConfig(this.tableRow.id, formName.name, formName.ip, formName.port, formName.username, formName.password, formName.remark).then((response) => {
               response = response.data;
               console.log(response)
               if (response.success == true) {
@@ -153,82 +218,22 @@ export default {
           return false;
         }
       })
-      
     },
     submitUpdateForm(formName) {
       // 重置表单，此处主要作用为清除rules验证结果信息
       this.$refs[formName].resetFields();
       this.$message({type: 'success',message: '操作成功'});
       // 恢复form表单为空,重新赋值不能写为单独的方法，只能直接赋值
-      this.form = {'name': '','ip': '','port': '','username': '','password': '','note': ''};
+      this.form = {'name': '','ip': '','port': '','username': '','password': '','remark': ''};
     },
     
     resetForm(formName) {
       this.$refs[formName].resetFields();
       this.$message({type: 'info',message: '取消操作'});
-      this.form = {'name': '','ip': '','port': '','username': '','password': '','note': ''};
-    },
-
-    editData(row) {
-      // row为选择行的内容，即list中该行数据
-      console.log(row);
-      var data = {
-              "name": row.name,
-              "ip": row.ip,
-              "port": row.port,
-              "username": row.username,
-              "password": '',
-              "note": row.note
-              };
-      this.form = data
-      // 为每行数据赋值，为编辑提交时获取id
-      this.tableRow = row
-    },
-    
-    deleteData (row){
-      toolDBOperDelConfig(row.id).then((response) => {
-          response = response.data;
-          if (response.success === true) {
-          this.openDialog = false;
-          // 删除成功后刷新页面
-          this.reload()
-        }
-      })
-    },
-
-    getData (size, page) {
-      toolDBOperGetConfigList(size, page).then((response) => {
-        response = response.data;
-        console.log(response)
-        if (response.success === true) {
-          // 创建并定义table_data为list
-          var table_data = new Array()
-          // 从接口获取的list数据，循环获取进行处理后，写入table_data中
-          for(var i=0;i<response.data.content.length;i++){
-            var data = response.data.content[i]
-            table_data.push({
-              "id": data.id,
-              "name": data.name,
-              "ip": data.ip,
-              "port": data.port,
-              "address": data.ip + ":" + String(data.port),
-              "username": data.username,
-              "note": data.remark
-              }
-              )}
-          this.tableData = table_data;
-          // 同时获取数据总数
-          this.tableTotal = response.data.total
-          }
-      })
-    },
-    getDataPageChange (val) {
-      // 获取当前页码
-      this.val = val
-      this.getData(10, val)
+      this.form = {'name': '','ip': '','port': '','username': '','password': '','remark': ''};
     }
   },
-    // 进入/刷新页面默认执行的函数，必须以mounted命名
+    // 进入/刷新页面默认执行的钩子函数
     mounted () {
       this.getData(10, 1)
     },
@@ -253,7 +258,7 @@ export default {
         port: '',
         username: '',
         password: '',
-        note: '',
+        remark: '',
       },
       rules: {
         name: [
