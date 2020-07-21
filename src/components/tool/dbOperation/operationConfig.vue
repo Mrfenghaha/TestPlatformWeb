@@ -252,9 +252,7 @@ export default {
           {max: 64, message: '最多可输入64个字符'}
           ],
         sql: 
-          {required: true, message: 'sql语句不能为空'},
-        remark: 
-          {required: true, message: '说明不能为空'}
+          {required: true, message: 'sql语句不能为空'}
       }
       }
     }

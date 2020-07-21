@@ -44,13 +44,14 @@ export const toolDBOperDelOper = (id) => {
     })
 }
 
-export const toolDBOperExOper = (db_id) => {
+export const toolDBOperExOper = (db_id, operation_id, param) => {
     return axios.request({
         method: 'POST',
         url: '/tool/db_operation/execute_operation',
         data: {
             "db_id": db_id,
-            "operation_id": operation_id
+            "operation_id": operation_id,
+            "param": param,
         }
     })
 }
