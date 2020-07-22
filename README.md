@@ -1,4 +1,4 @@
-# testplatformweb
+# TestPlatformWeb
 
 ## Project setup
 ```
