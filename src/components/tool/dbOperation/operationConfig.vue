@@ -19,7 +19,7 @@
             fixed
             prop="name"
             label="操作名称"
-            width="200">
+            width="300">
           </el-table-column>
           <el-table-column
             prop="sql"

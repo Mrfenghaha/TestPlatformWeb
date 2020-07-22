@@ -14,7 +14,6 @@
                     :label="item.label"
                     :key="item.value"
                     :value="item.value">
-                    {{ item.label }}
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -27,7 +26,6 @@
                     :label="item.label"
                     :key="item.value"
                     :value="item.value">
-                    {{ item.label }}
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -51,8 +49,18 @@
         </div>
         <div class="output">
           <div class="result">
-            <div>{{ result.status }}</div>
-            <div>{{ result.content }}</div>
+            <div v-if="statusNameShow">{{ result.statusName }}</div>
+            <div v-if="statusShow" :style="resultStatusColor(result.status)">{{ result.status }}</div>
+            <div v-if="contentNameShow">{{ result.contentName }}</div>
+            <el-form :model="result" ref="result">
+              <el-input
+                v-if="contentShow"
+                type="textarea"
+                :rows="15"
+                :readonly="true"
+                v-model="result.content">
+              </el-input>
+            </el-form>
           </div>
         </div>
     </div>
@@ -71,15 +79,51 @@ export default {
   inject: ['reload'],
 
   methods: {
+    // 执行结果根据不同内容显示不同颜色
+    resultStatusColor (content){
+      // 如果执行结果包含执行失败字样，设置为红色，否则为绿色
+      if (content.indexOf("执行失败") != -1){
+        return {'color':'red'}
+      }
+      else{
+        return {'color':'green'}
+      }
+    },
+
     submit () {
       this.$refs['form'].validate((valid) => {
         // 根据表单格式验证规则，触发验证行为，valid为验证结果
         if (valid) {
-          toolDBOperExOper(this.form.db_id, this.form.operation_id, this.form.param.split(",")).then((response) => {
+          // 当未输入任何字符时，接口parm参数设为[]，否则根据,切割为list
+          if (this.form.param == ""){
+            var parm = []
+          }else{
+            var parm = this.form.param.split(",")
+          }
+          toolDBOperExOper(this.form.db_id, this.form.operation_id, parm).then((response) => {
             response = response.data;
             console.log(response)
             if (response.success === true) {
-              this.result={"status": "提交状态：" + response.data.result_explain, "content": "提交结果" + response.data.result}
+              // 如果执行操作返回的结果为空时，不显示所结果标题和内容，否则正常显示
+              if (response.data.result == ""){
+                var contentName = ''
+                var content = ''
+                // 关闭结果内容元素显示
+                this.contentNameShow = false
+                this.contentShow = false
+              }
+              else{
+                var contentName = '结果:'
+                var content = JSON.stringify(response.data.result)
+                // 打开结果内容元素显示
+                this.contentNameShow = true
+                this.contentShow = true
+              }
+              // 打开结果状态元素显示
+              this.statusNameShow = true
+              this.statusShow = true
+              // 根据执行结果，设定显示内容
+              this.result={"statusName": "状态:", "status": response.data.status, "contentName": contentName, "content": content}
             }
           }).catch(err => {
             // 对于200之外的错误status，需要添加err获取接口数据
@@ -106,7 +150,7 @@ export default {
           if (response.data.content == undefined){
             db_list = []
           }else{
-            // 从接口获取的list数据，循环获取进行处理后，写入db_list中
+            // 从接口获取的list数据，循环获取进行处理后，写入db_list中，用于数据库选择项
             for(var i=0;i<response.data.content.length;i++){
               var data = response.data.content[i]
               db_list.push({
@@ -134,7 +178,7 @@ export default {
           if (response.data.content == undefined){
             oper_list = []
           }else{
-            // 从接口获取的list数据，循环获取进行处理后，写入oper_list中
+            // 从接口获取的list数据，循环获取进行处理后，写入oper_list中，用于操作选择项
             for(var i=0;i<response.data.content.length;i++){
               var data = response.data.content[i]
               oper_list.push({
@@ -169,8 +213,6 @@ export default {
         operations: [],
         // 参数输入框的初始值
         input: '',
-        // 执行结果的初始值
-        result: '',
         // 执行操作表单初始值
         form:{
           db_id: '',
@@ -180,7 +222,19 @@ export default {
         rules: {
           db_id: {required: true, message: '数据库必须选择'},
           operation_id: {required: true, message: '操作必须选择'}
-      }
+        },
+        // 执行结果框是否显示的初始值
+        statusNameShow: false,
+        statusShow: false,
+        contentNameShow: false,
+        contentShow: false,
+        // 执行结果的初始值
+        result: {
+          'statusName': '',
+          'status': '',
+          'contentName': '',
+          'content': ''
+          },
       }
     },
 }
@@ -201,43 +255,19 @@ export default {
     font-weight: bold;
   }
 
-  /* .database_text {
-    position:absolute;
-    text-align:left;
-    margin-left: 5%;
-    width: 8%;
-    line-height:40px;
-  } */
-
   .database_select {
     /* 当前div与下一个div同行显示 */
     position:absolute;
     /* 距离最左侧距离 */
     margin-left: 4%;
     /* 设置元素长度 */
-    width: 23%;
+    width: 20%;
   }
-
-  /* .operation_text {
-    position:absolute;
-    text-align:left;
-    margin-left: 32%;
-    width: 8%;
-    line-height:40px;
-  } */
 
   .operation_select{
-    margin-left: 43%;
-    width: 45%;
+    margin-left: 38%;
+    width: 50%;
   }
-
-  /* .parm_input_text{
-    position:absolute;
-    text-align:left;
-    margin-left: 5%;;
-    width: 8%;;
-    line-height:40px;
-  } */
 
   .parm_input{
     margin-left: 4.6%;
@@ -271,7 +301,7 @@ export default {
   .result{
     text-align:left;
     margin-top: 60px;
-    margin-left: 30%;
+    margin-left: 20%;
     /* 设置元素高度 */
     line-height:40px;
     width: 50%;
