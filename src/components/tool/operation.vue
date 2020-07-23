@@ -68,8 +68,8 @@
 </template>
   
 <script>
-import headTop from '../../head'
-import {toolDBOperGetOperList, toolDBOperGetConfigList, toolDBOperExOper} from '../../../api'
+import headTop from '../head'
+import {toolDBOperGetOperList, toolDBOperGetConfigList, toolDBOperExOper} from '../../api'
 
 export default {
   name: "dbOperation",
@@ -195,12 +195,12 @@ export default {
         })
     },
   },
-  // 进入/刷新页面默认执行的钩子函数
+  // 进入页面默认执行的钩子函数
   mounted () {
     this.getDatabases(1000, 1)
     this.getOperations(1000, 1)
   },
-
+  
   data() {
       return {
         // 数据库选择框的初始值

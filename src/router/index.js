@@ -2,9 +2,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Index from '../components/index'
 import Blank from '../components/blank'
-import DBOperation from '../components/tool/dbOperation/operation'
-import DBOperationConfig from '../components/tool/dbOperation/operationConfig'
-import DBOperationDBConfig from '../components/tool/dbOperation/databaseConfig'
+import toolPairs from '../components/tool/pairs'
+import toolOperation from '../components/tool/operation'
+import toolOperationConfig from '../components/tool/operationConfig'
+import toolOperationDBConfig from '../components/tool/operationDBConfig'
 
 Vue.use(Router)
 
@@ -26,7 +27,7 @@ export default new Router({
     component: Index,
     children: [{
       path: 'pairs',
-      component: DBOperation,
+      component: toolPairs,
       meta: ['测试工具', '正交法Pair']
     },
     {
@@ -34,17 +35,17 @@ export default new Router({
       component: Blank,
       children: [{
         path: 'operations',
-        component: DBOperation,
+        component: toolOperation,
         meta: ['测试工具', 'DB操作', "操作"]
       },
       {
         path: 'operation-configs',
-        component: DBOperationConfig,
+        component: toolOperationConfig,
         meta: ['测试工具', 'DB操作', "操作配置"]
       },
       {
         path: 'database-configs',
-        component: DBOperationDBConfig,
+        component: toolOperationDBConfig,
         meta: ['测试工具', 'DB操作', "数据库配置"]
       }
     ]},
@@ -54,7 +55,7 @@ export default new Router({
       children: [
         {
           path: 'mock-configs',
-          component: DBOperationDBConfig,
+          component: toolOperationDBConfig,
           meta: ['测试工具', 'Mock配置', "Mock配置"]
         }
     ]},

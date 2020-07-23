@@ -19,21 +19,25 @@
             fixed
             prop="name"
             label="数据库名称"
-            width="200">
+            width="200"
+            :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
             prop="address"
-            label="数据库地址">
+            label="数据库地址"
+            :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
             prop="username"
             label="账号"
-            width="150">
+            width="120"
+            :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
             prop="remark"
             label="说明"
-            width="200">
+            width="180"
+            :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -103,8 +107,8 @@
 </template>
 
 <script>
-import headTop from '../../head'
-import {toolDBOperGetConfigList, toolDBOperAddConfig, toolDBOperUpdateConfig, toolDBOperDelConfig} from '../../../api'
+import headTop from '../head'
+import {toolDBOperGetConfigList, toolDBOperAddConfig, toolDBOperUpdateConfig, toolDBOperDelConfig} from '../../api'
 
 export default {
   name: "databaseConfigs",
@@ -233,7 +237,7 @@ export default {
       this.form = {'name': '','ip': '','port': '','username': '','password': '','remark': ''};
     }
   },
-    // 进入/刷新页面默认执行的钩子函数
+    // 进入页面默认执行的钩子函数
     mounted () {
       this.getData(10, 1)
     },

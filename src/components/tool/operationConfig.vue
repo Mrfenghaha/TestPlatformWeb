@@ -19,16 +19,19 @@
             fixed
             prop="name"
             label="操作名称"
-            width="300">
+            width="200"
+            :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
             prop="sql"
-            label="sql语句">
+            label="sql语句"
+            :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
             prop="remark"
             label="说明"
-            width="200">
+            width="200"
+            :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -95,8 +98,8 @@
 </template>
 
 <script>
-import headTop from '../../head'
-import {toolDBOperGetOperList, toolDBOperAddOper, toolDBOperUpdateOper, toolDBOperDelOper} from '../../../api'
+import headTop from '../head'
+import {toolDBOperGetOperList, toolDBOperAddOper, toolDBOperUpdateOper, toolDBOperDelOper} from '../../api'
 
 export default {
   name: "operationConfigs",
@@ -222,7 +225,7 @@ export default {
       this.form = {'name': '','sql': '','remark': ''};
     }
   },
-    // 进入/刷新页面默认执行的钩子函数
+    // 进入页面默认执行的钩子函数
     mounted () {
       this.getData(10, 1)
     },
