@@ -1,111 +1,104 @@
 <template>
   <div>
-    <head-top></head-top>
-    <div class="page">
-      <div class="title">
-        <div class="title_text">操作列表</div>
-        <el-row style="text-align:right;">
-          <el-button style="width: 100px" @click="openDialog = true;DialogTitle = '添加操作'" type="primary">添加</el-button>
-        </el-row>
+    <div class="title">
+      <div class="title_text">操作列表</div>
+      <el-row style="text-align:right;">
+        <el-button style="width: 100px" @click="openDialog = true;DialogTitle = '添加操作'" type="primary">添加</el-button>
+      </el-row>
+    </div>
+    <div style="margin-top: 2%"></div>
+    <div class="table">
+      <el-table
+        border
+        :data="tableData"
+        :stripe="true"
+        style="width: 100%">
+        <el-table-column
+          fixed
+          prop="name"
+          label="操作名称"
+          width="200"
+          :show-overflow-tooltip="true">
+        </el-table-column>
+        <el-table-column
+          prop="sql"
+          label="sql语句"
+          :show-overflow-tooltip="true">
+        </el-table-column>
+        <el-table-column
+          prop="remark"
+          label="说明"
+          width="200"
+          :show-overflow-tooltip="true">
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          label="操作"
+          width="100">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="editData(scope.row);openDialog = true;DialogTitle = '编辑操作'">编辑</el-button>
+            <el-popconfirm @onConfirm="deleteData(scope.row)"  title="确定删除该操作吗？">
+              <el-button type="text" size="small" slot="reference">删除</el-button>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="margin-top: 1%"></div>
+      <div class="block" style="text-align:right;">
+        <el-pagination
+          @current-change="getDataPageChange"
+          layout="total, prev, pager, next"
+          :page-size="10"
+          :total="tableTotal">
+        </el-pagination>
       </div>
-      <div style="margin-top: 2%"></div>
-      <div class="table">
-        <el-table
-          border
-          :data="tableData"
-          :stripe="true"
-          style="width: 100%">
-          <el-table-column
-            fixed
-            prop="name"
-            label="操作名称"
-            width="200"
-            :show-overflow-tooltip="true">
-          </el-table-column>
-          <el-table-column
-            prop="sql"
-            label="sql语句"
-            :show-overflow-tooltip="true">
-          </el-table-column>
-          <el-table-column
-            prop="remark"
-            label="说明"
-            width="200"
-            :show-overflow-tooltip="true">
-          </el-table-column>
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="100">
-            <template slot-scope="scope">
-              <el-button type="text" size="small" @click="editData(scope.row);openDialog = true;DialogTitle = '编辑操作'">编辑</el-button>
-              <el-popconfirm @onConfirm="deleteData(scope.row)"  title="确定删除该操作吗？">
-                <el-button type="text" size="small" slot="reference">删除</el-button>
-              </el-popconfirm>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div style="margin-top: 1%"></div>
-        <div class="block" style="text-align:right;">
-          <el-pagination
-            @current-change="getDataPageChange"
-            layout="total, prev, pager, next"
-            :page-size="10"
-            :total="tableTotal">
-          </el-pagination>
+    </div>
+    <div class="box">
+      <el-dialog
+        :title="DialogTitle"
+        width=550px
+        :close-on-click-modal="false"
+        :before-close="closeDialog"
+        :visible.sync="openDialog">
+        <div class="box_form">
+        <el-form :model="form" :rules="rules" ref="form" label-width="70px">
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="form.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="sql语句" prop="sql">
+            <el-input
+              type="textarea"
+              :rows="3"
+              placeholder="所有参数均使用%s代替"
+              v-model="form.sql"
+              autocomplete="off">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="说明" prop="remark">
+            <el-input
+              type="textarea"
+              :rows="3"
+              placeholder="请输入说明内容"
+              v-model="form.remark"
+              autocomplete="off">
+            </el-input>
+          </el-form-item>
+        </el-form>
         </div>
-      </div>
-      <div class="box">
-        <el-dialog
-          :title="DialogTitle"
-          width=550px
-          :close-on-click-modal="false"
-          :before-close="closeDialog"
-          :visible.sync="openDialog">
-          <div class="box_form">
-          <el-form :model="form" :rules="rules" ref="form" label-width="70px">
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="form.name" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="sql语句" prop="sql">
-              <el-input
-                type="textarea"
-                :rows="3"
-                placeholder="所有参数均使用%s代替"
-                v-model="form.sql"
-                autocomplete="off">
-              </el-input>
-            </el-form-item>
-            <el-form-item label="说明" prop="remark">
-              <el-input
-                type="textarea"
-                :rows="3"
-                placeholder="请输入说明内容"
-                v-model="form.remark"
-                autocomplete="off">
-              </el-input>
-            </el-form-item>
-          </el-form>
-          </div>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="openDialog = false;resetForm('form')">取 消</el-button>
-            <el-button type="primary" @click="submitForm(form)">确 定</el-button>
-          </div>
-        </el-dialog>
-      </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="openDialog = false;resetForm('form')">取 消</el-button>
+          <el-button type="primary" @click="submitForm(form)">确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import headTop from '../head'
 import {toolDBOperGetOperList, toolDBOperAddOper, toolDBOperUpdateOper, toolDBOperDelOper} from '../../api'
 
 export default {
   name: "operationConfigs",
-  components: {
-    headTop
-  },
   inject: ['reload'],
 
   methods: {
@@ -155,7 +148,6 @@ export default {
       toolDBOperDelOper(row.id).then((response) => {
           response = response.data;
           if (response.success === true) {
-          this.openDialog = false;
           // 删除成功后刷新页面
           this.reload()
         }
@@ -225,10 +217,10 @@ export default {
       this.form = {'name': '','sql': '','remark': ''};
     }
   },
-    // 进入页面默认执行的钩子函数
-    mounted () {
-      this.getData(10, 1)
-    },
+  // 进入页面默认执行的钩子函数
+  mounted () {
+    this.getData(10, 1)
+  },
   
 
   data() {
@@ -263,12 +255,6 @@ export default {
 </script>
 
 <style>
-.page {
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-top: 5%;
-}
-
 .title_text {
   position:absolute;
   font-size: 19px;

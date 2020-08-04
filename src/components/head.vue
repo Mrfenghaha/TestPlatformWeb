@@ -1,5 +1,5 @@
 <template>
-  <div id="headBox">
+  <div id="headTop">
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item v-for="(item, index) in $route.meta" :key="index">{{item}}</el-breadcrumb-item>
@@ -9,12 +9,12 @@
 
 <script>
 export default {
-  name: "headBox"
+  name: "headTop"
 }
 </script>
 
 <style scoped>
-  #headBox{
+  #headTop{
     height: 60px;
     background-color: #EFF2F7;
     align-items: center;

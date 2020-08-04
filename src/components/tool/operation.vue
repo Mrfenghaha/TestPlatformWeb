@@ -1,81 +1,74 @@
 <template>
   <div>
-    <head-top></head-top>
-    <div class="page">
-      <div class="title">数据库操作</div>
-      <div style="margin-top: 30px"></div>
-        <div class="input">
-          <el-form :model="form" :rules="rules" ref="form" label-width="100px">
-            <div class="database_select">
-              <el-form-item label="数据库选择:" prop="db_id">
-                <el-select style="width: 100%" v-model="form.db_id" filterable no-data-text="请先配置数据库" placeholder="请选择数据库">
-                  <el-option
-                    v-for="item in databases"
-                    :label="item.label"
-                    :key="item.value"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </div>
-            <div class="operation_select">
-              <el-form-item label="操作选择:" prop="operation_id">
-                <el-select style="width: 100%" v-model="form.operation_id" filterable no-data-text="请先配置DB操作" placeholder="请选择DB操作">
-                  <el-option
-                    v-for="item in operations"
-                    :label="item.label"
-                    :key="item.value"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </div>
-            <div style="margin-top: 30px"></div>
-            <div class="parm_input">
-              <el-form-item label="参数输入:" prop="param">
-                <el-input v-model="form.param" filterable placeholder="请依次输入参数并以半角,号隔开" autocomplete="off">
-                </el-input>
-              </el-form-item>
-            </div>
-            <div class="parm_input_instruction">请依次填入参数并以半角,号隔开，例：value1,value2,value3</div>
+    <div class="title">数据库操作</div>
+    <div style="margin-top: 30px"></div>
+      <div class="oper_input">
+        <el-form :model="form" :rules="rules" ref="form" label-width="100px">
+          <div class="database_select">
+            <el-form-item label="数据库选择:" prop="db_id">
+              <el-select style="width: 100%" v-model="form.db_id" filterable no-data-text="请先配置数据库" placeholder="请选择数据库">
+                <el-option
+                  v-for="item in databases"
+                  :label="item.label"
+                  :key="item.value"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="operation_select">
+            <el-form-item label="操作选择:" prop="operation_id">
+              <el-select style="width: 100%" v-model="form.operation_id" filterable no-data-text="请先配置DB操作" placeholder="请选择DB操作">
+                <el-option
+                  v-for="item in operations"
+                  :label="item.label"
+                  :key="item.value"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </div>
+          <div style="margin-top: 30px"></div>
+          <div class="parm_input">
+            <el-form-item label="参数输入:" prop="param">
+              <el-input class="parm_input_box" style="width:98%" v-model="form.param" placeholder="请依次输入参数并以半角,号隔开" autocomplete="off">
+              </el-input>
+            </el-form-item>
+          </div>
+          <div class="parm_input_instruction">请依次填入参数并以半角,号隔开，例：value1,value2,value3</div>
+        </el-form>
+      </div>
+      <div class="button">
+        <div style="margin-top: 20px"></div>
+        <div class="submit">
+          <el-button style="width: 100px" @click="submit" type="primary">提交执行</el-button>
+        </div>
+          <el-button class="reset" @click="reset">重置</el-button>
+      </div>
+      <div class="output">
+        <div class="result">
+          <div v-if="statusNameShow">{{ result.statusName }}</div>
+          <div v-if="statusShow" :style="resultStatusColor(result.status)">{{ result.status }}</div>
+          <div v-if="contentNameShow">{{ result.contentName }}</div>
+          <el-form :model="result" ref="result">
+            <el-input
+              v-if="contentShow"
+              type="textarea"
+              :rows="15"
+              :readonly="true"
+              v-model="result.content">
+            </el-input>
           </el-form>
         </div>
-        <div class="button">
-          <div style="margin-top: 20px"></div>
-          <div class="submit">
-            <el-button style="width: 100px" @click="submit" type="primary">提交执行</el-button>
-          </div>
-            <el-button class="reset" @click="reset" type="primary">重置</el-button>
-        </div>
-        <div class="output">
-          <div class="result">
-            <div v-if="statusNameShow">{{ result.statusName }}</div>
-            <div v-if="statusShow" :style="resultStatusColor(result.status)">{{ result.status }}</div>
-            <div v-if="contentNameShow">{{ result.contentName }}</div>
-            <el-form :model="result" ref="result">
-              <el-input
-                v-if="contentShow"
-                type="textarea"
-                :rows="15"
-                :readonly="true"
-                v-model="result.content">
-              </el-input>
-            </el-form>
-          </div>
-        </div>
-    </div>
+      </div>
   </div>
 </template>
   
 <script>
-import headTop from '../head'
 import {toolDBOperGetOperList, toolDBOperGetConfigList, toolDBOperExOper} from '../../api'
 
 export default {
-  name: "dbOperation",
-  components: {
-    headTop
-  },
+  name: "operation",
   inject: ['reload'],
 
   methods: {
@@ -98,7 +91,7 @@ export default {
           if (this.form.param == ""){
             var parm = []
           }else{
-            var parm = this.form.param.split(",")
+            var parm = this.form.param.replace(/，/g,",").split(",")
           }
           toolDBOperExOper(this.form.db_id, this.form.operation_id, parm).then((response) => {
             response = response.data;
@@ -202,39 +195,52 @@ export default {
   },
   
   data() {
-      return {
-        // 数据库选择框的初始值
-        value1: '',
-        // 数据库选择框数据的初始值
-        databases: [],
-        // 操作选择框的初始值
-        value2: '',
-        // 操作选择框的初始值
-        operations: [],
-        // 参数输入框的初始值
-        input: '',
-        // 执行操作表单初始值
-        form:{
-          db_id: '',
-          operation_id: '',
-          param: ''
+    const validatePass = (rule, value, callback) => {
+      if (value.charAt(value.length-1) == ',') {
+        callback(new Error('参数不能已,结尾'))
+      } else {
+        if (value.charAt(value.length-1) == '，'){
+          callback(new Error('参数不能已,结尾'))
+        }else{
+          callback()
+        }
+      }
+    }
+
+    return {
+      // 数据库选择框的初始值
+      value1: '',
+      // 数据库选择框数据的初始值
+      databases: [],
+      // 操作选择框的初始值
+      value2: '',
+      // 操作选择框的初始值
+      operations: [],
+      // 参数输入框的初始值
+      input: '',
+      // 执行操作表单初始值
+      form:{
+        db_id: '',
+        operation_id: '',
+        param: ''
+      },
+      rules: {
+        db_id: {required: true, message: '数据库必须选择'},
+        operation_id: {required: true, message: '操作必须选择'},
+        param: {required: false, validator: validatePass}
+      },
+      // 执行结果框是否显示的初始值
+      statusNameShow: false,
+      statusShow: false,
+      contentNameShow: false,
+      contentShow: false,
+      // 执行结果的初始值
+      result: {
+        'statusName': '',
+        'status': '',
+        'contentName': '',
+        'content': ''
         },
-        rules: {
-          db_id: {required: true, message: '数据库必须选择'},
-          operation_id: {required: true, message: '操作必须选择'}
-        },
-        // 执行结果框是否显示的初始值
-        statusNameShow: false,
-        statusShow: false,
-        contentNameShow: false,
-        contentShow: false,
-        // 执行结果的初始值
-        result: {
-          'statusName': '',
-          'status': '',
-          'contentName': '',
-          'content': ''
-          },
       }
     },
 }
@@ -242,12 +248,6 @@ export default {
       
   
 <style>
-  .page {
-    margin-left: 10%;
-    margin-right: 10%;
-    margin-top: 5%;
-  }
-
   .title {
     /* 元素内居左 */
     text-align:left;
@@ -274,8 +274,13 @@ export default {
     width: 83.5%;
   }
 
+  .parm_input_box{
+    margin-left: 2%;
+  }
+
   .parm_input_instruction {
-    margin-top: -25px;
+    margin-left: 175px;
+    /* margin-top: -25px; */
     /* margin-left: 5%; */
     text-align:left;
     /* 文本字体大小 */
@@ -295,15 +300,14 @@ export default {
 
   .reset{
     width: 100px;
-    margin-left: 5%
   }
 
   .result{
     text-align:left;
     margin-top: 60px;
-    margin-left: 20%;
+    margin-left: 15%;
     /* 设置元素高度 */
     line-height:40px;
-    width: 50%;
+    width: 60%;
   }
 </style>

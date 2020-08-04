@@ -6,6 +6,8 @@ import toolPairs from '../components/tool/pairs'
 import toolOperation from '../components/tool/operation'
 import toolOperationConfig from '../components/tool/operationConfig'
 import toolOperationDBConfig from '../components/tool/operationDBConfig'
+import toolMockServer from '../components/tool/mockServer'
+import toolMockServerId from '../components/tool/mockServerId'
 
 Vue.use(Router)
 
@@ -54,11 +56,17 @@ export default new Router({
       component: Blank,
       children: [
         {
-          path: 'mock-configs',
-          component: toolOperationDBConfig,
-          meta: ['测试工具', 'Mock配置', "Mock配置"]
+          path: '',
+          component: toolMockServer,
+          meta: ['测试工具', 'Mock配置']
+        },
+        {
+          path: 'detail',
+          component: toolMockServerId,
+          meta: ['测试工具', 'Mock配置', '详情']
         }
-    ]},
+    ]
+  },
     ]},
   {
     path: '/', redirect: '/index'
