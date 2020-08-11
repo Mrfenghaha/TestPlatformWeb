@@ -102,15 +102,9 @@ export default {
   inject: ['reload'],
 
   methods: {
-    closeDialog(){
-      // 实现局部刷新
-      this.reload()
-    },
-
     getData (size, page) {
       toolDBOperGetOperList(size, page).then((response) => {
         response = response.data;
-        console.log(response)
         if (response.success === true) {
           // 创建并定义table_data为list
           var table_data = new Array()
@@ -156,7 +150,7 @@ export default {
 
     editData(row) {
       // row为选择行的内容，即list中该行数据
-      console.log(row);
+      // console.log(row);
       var data = {
               "name": row.name,
               "sql": row.sql,
@@ -174,7 +168,6 @@ export default {
           if (this.DialogTitle == '添加操作'){
             toolDBOperAddOper(formName.name, formName.sql, formName.remark).then((response) => {
               response = response.data;
-              console.log(response)
               if (response.success == true) {
                 // 创建成功后刷新页面
                 this.reload()
@@ -187,7 +180,6 @@ export default {
           } else {
             toolDBOperUpdateOper(this.tableRow.id, formName.name, formName.sql, formName.remark).then((response) => {
               response = response.data;
-              console.log(response)
               if (response.success == true) {
                 this.openDialog = false;
                 // 编辑成功后，仍停留在该页，需要使用当前页码获取数据，刷新显示
@@ -208,13 +200,18 @@ export default {
       this.$refs[formName].resetFields();
       this.$message({type: 'success',message: '操作成功'});
       // 恢复form表单为空,重新赋值不能写为单独的方法，只能直接赋值
-      this.form = {'name': '','sql': '','remark': ''};
+      this.form = {name: '',sql: '',remark: ''};
     },
     
     resetForm(formName) {
       this.$refs[formName].resetFields();
       this.$message({type: 'info',message: '取消操作'});
-      this.form = {'name': '','sql': '','remark': ''};
+      this.form = {name: '',sql: '',remark: ''};
+    },
+
+    closeDialog(){
+      this.openDialog = false
+      this.resetForm('form')
     }
   },
   // 进入页面默认执行的钩子函数

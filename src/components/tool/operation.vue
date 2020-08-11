@@ -95,7 +95,6 @@ export default {
           }
           toolDBOperExOper(this.form.db_id, this.form.operation_id, parm).then((response) => {
             response = response.data;
-            console.log(response)
             if (response.success === true) {
               // 如果执行操作返回的结果为空时，不显示所结果标题和内容，否则正常显示
               if (response.data.result == ""){
@@ -135,7 +134,6 @@ export default {
     getDatabases (size, page) {
       toolDBOperGetConfigList(size, page).then((response) => {
         response = response.data;
-        console.log(response)
         if (response.success === true) {
           // 创建并定义db_list为list
           var db_list = new Array()
@@ -153,8 +151,6 @@ export default {
             )}
           }
           this.databases = db_list;
-
-          console.log(this.databases)
         }
       }).catch(err => {
         this.$message({type: 'error',message: err.response.data.error_message})
@@ -163,7 +159,6 @@ export default {
     getOperations (size, page) {
       toolDBOperGetOperList(size, page).then((response) => {
         response = response.data;
-        console.log(response)
         if (response.success === true) {
           // 创建并定义oper_list为list
           var oper_list = new Array()
@@ -181,7 +176,6 @@ export default {
             )}
           }
           this.operations = oper_list;
-          console.log(this.operations)
         }
       }).catch(err => {
         this.$message({type: 'error',message: err.response.data.error_message})

@@ -6,7 +6,6 @@
       <el-tab-pane label="Mock详情" name="first"><detail></detail></el-tab-pane>
       <el-tab-pane label="响应配置" name="second"><response></response></el-tab-pane>
     </el-tabs>
-    <!-- <router-view/> -->
   </div>
 </template>
 

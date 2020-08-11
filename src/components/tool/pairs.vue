@@ -77,10 +77,8 @@ export default {
               var domain = this.form.domains[i]
               conds.push(domain.value.replace(/，/g,",").split(","))
               }
-            console.log(conds)
             toolOrthogonal(conds).then((response) => {
               response = response.data;
-              console.log(response)
               if (response.success === true) {
                 var pairs = new String();
                 for(var i=0;i<response.data.pairs.length;i++){
@@ -118,18 +116,6 @@ export default {
   },
   
   data() {
-    const validatePass = (rule, value, callback) => {
-      if (value.charAt(value.length-1) == ',') {
-        callback(new Error('参数不能已,结尾'))
-      } else {
-        if (value.charAt(value.length-1) == '，'){
-          callback(new Error('参数不能已,结尾'))
-        }else{
-          callback()
-        }
-      }
-    }
-
     return {
       form: {
         domains: [{
@@ -158,7 +144,7 @@ export default {
 
   .pair_input_text{
     position:absolute;
-    width: 35%;
+    width: 35.2%;
   }
 
   .pair_input_box{
