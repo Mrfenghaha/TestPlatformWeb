@@ -61,7 +61,7 @@ export default new Router({
           meta: ['测试工具', 'Mock配置']
         },
         {
-          path: 'detail',
+          path: 'detail/:id',
           component: toolMockServerId,
           meta: ['测试工具', 'Mock配置', '详情']
         }

@@ -25,7 +25,7 @@ export default {
       this.$router.replace('/tool/mock-server')
     },
     handleClick(tab, event) {
-      console.log(tab, event);
+      // console.log(tab, event);
     }
   },
   data() {

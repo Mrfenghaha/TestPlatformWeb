@@ -17,7 +17,7 @@
           fixed
           prop="url"
           label="url"
-          width="200"
+          width="220"
           :show-overflow-tooltip="true">
         </el-table-column>
         <el-table-column
@@ -29,13 +29,13 @@
         <el-table-column
           prop="availabled"
           label="启用"
-          width="80"
+          width="60"
           :show-overflow-tooltip="true">
         </el-table-column>
         <el-table-column
           prop="delay"
-          label="延时(s)"
-          width="100"
+          label="延时(ms)"
+          width="90"
           :show-overflow-tooltip="true">
         </el-table-column>
         <el-table-column
@@ -178,7 +178,7 @@ export default {
                 "availabled": availabled,
                 "delay": data.delay,
                 "remark": data.remark,
-                "response": JSON.stringify(data.response)
+                "response": data.response
               }
             )}
           }
@@ -208,7 +208,7 @@ export default {
     },
 
     editData(row) {
-      this.$router.replace('/tool/mock-server/detail?' + row.id)
+      this.$router.replace('/tool/mock-server/detail/' + row.id)
     },
 
     submitForm(formName) {
@@ -220,7 +220,7 @@ export default {
             if (response.success == true) {
               // 创建成功后刷新页面
               this.reload()
-              this.$message({type: 'success',message: '操作成功'});
+              this.$message({type: 'success',message: '添加成功'});
             }
             }).catch(err => {
               // 对于200之外的错误status，需要添加err获取接口数据
@@ -235,7 +235,7 @@ export default {
     resetForm(formName) {
       // 重置表单，此处主要作用为清除rules验证结果信息
       this.$refs[formName].resetFields();
-      this.$message({type: 'info',message: '取消操作'});
+      this.$message({type: 'info',message: '取消添加'});
       // 恢复form表单为空,重新赋值不能写为单独的方法，只能直接赋值
       this.form = {url: '', methods: '', availabled: '1', delay: 0, remark: ''};
     },
@@ -280,8 +280,10 @@ export default {
           {required: true, message: '请选择请求方式'},
         availabled: 
           {required: true, message: '请选择是否启用'},
-        delay: 
+        delay:[
           {required: true, message: '响应延时不能为空'},
+          {type: 'number', message: '响应延时必须为数字'}
+          ],
         remark: 
           {required: true, message: '接口描述不能为空'}
       }

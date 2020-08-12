@@ -17,7 +17,11 @@ export const toolOrthogonal = (input) => {
 export const toolDBOperGetOperList = (size, page) => {
   return axios.request({
       method: 'GET',
-      url: `/tool/db_operation/get_operation_list?page=${page}&size=${size}`,
+      url: '/tool/db_operation/get_operation_list',
+      params: {
+        "page": page,
+        "size": size
+      }
   })
 }
 
@@ -70,7 +74,11 @@ export const toolDBOperExOper = (db_id, operation_id, param) => {
 export const toolDBOperGetConfigList = (size, page) => {
   return axios.request({
       method: 'GET',
-      url: `/tool/db_operation/get_config_list?page=${page}&size=${size}`,
+      url: '/tool/db_operation/get_config_list',
+      params: {
+        "page": page,
+        "size": size
+      }
   })
 }
 
@@ -117,8 +125,20 @@ export const toolDBOperDelConfig = (id) => {
 export const toolMockServerGetMockList = (size, page) => {
     return axios.request({
         method: 'GET',
-        url: `/tool/mock_server/get_mock_list?page=${page}&size=${size}`,
+        url: '/tool/mock_server/get_mock_list',
+        params: {
+          "page": page,
+          "size": size
+        }
     })
+}
+
+export const toolMockServerGetMock = (id) => {
+  return axios.request({
+      method: 'GET',
+      url: '/tool/mock_server/get_mock',
+      params: {"id": id}
+  })
 }
 
 export const toolMockServerAddMock = (url, methods, is_available, delay, remark) => {
@@ -164,6 +184,54 @@ export const toolMockServerGetConfigs = () => {
   return axios.request({
       method: 'GET',
       url: '/tool/mock_server/get_configs',
-      data: {}
+      params: {}
+  })
+}
+
+// mockServer-mock下的response
+export const toolMockServerGetRespList = (mock_id) => {
+  return axios.request({
+      method: 'GET',
+      url: '/tool/mock_server/get_response_list',
+      params: {"mock_id": mock_id}
+  })
+}
+
+export const toolMockServerAddResp = (mock_id, resp_code, resp_status, resp_headers, resp_body, remark) => {
+  return axios.request({
+      method: 'POST',
+      url: '/tool/mock_server/add_response',
+      data: {
+          "mock_id": mock_id,
+          "resp_code": resp_code,
+          "resp_status": resp_status,
+          "resp_headers": resp_headers,
+          "resp_body": resp_body,
+          "remark": remark
+      }
+  })
+}
+
+export const toolMockServerUpdateResp= (id, mock_id, resp_code, resp_status, resp_headers, resp_body, remark) => {
+  return axios.request({
+      method: 'PUT',
+      url: '/tool/mock_server/update_response',
+      data: {
+          "id": id,
+          "mock_id": mock_id,
+          "resp_code": resp_code,
+          "resp_status": resp_status,
+          "resp_headers": resp_headers,
+          "resp_body": resp_body,
+          "remark": remark
+      }
+  })
+}
+
+export const toolMockServerDelResp = (id) => {
+  return axios.request({
+      method: 'DELETE',
+      url: '/tool/mock_server/delete_response',
+      data: {"id": id}
   })
 }

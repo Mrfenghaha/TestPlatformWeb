@@ -22,8 +22,8 @@
           <el-option label="禁用" value='0'></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="响应延时时间(ms)" prop="delay">
-        <el-input v-model="form.delay"></el-input>
+      <el-form-item label="响应延时(ms)" prop="delay">
+        <el-input v-model.number="form.delay"></el-input>
       </el-form-item>
       <el-form-item label="默认响应代码" prop="code">
         <el-select style="width: 100%" v-model="form.code" placeholder="请选择默认响应代码">
@@ -45,47 +45,21 @@
             </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="createSubmit(form)">立即创建</el-button>
-        <el-button @click="cancel">取消</el-button>
+        <el-button type="primary" @click="createSubmit(form)">保存</el-button>
+        <el-button @click="cancel()">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-import {toolMockServerGetConfigs, toolMockServerAddMock} from '../../api'
+import {toolMockServerGetConfigs, toolMockServerGetMock, toolMockServerUpdateMock, toolMockServerGetRespList} from '../../api'
 
 export default {
   name: "mockServerDetail",
+  inject: ['reload'],
 
   methods: {
-    createSubmit(formName) {
-      this.$refs['form'].validate((valid) => {
-        // 根据表单格式验证规则，触发验证行为，valid为验证结果
-        if (valid) {
-
-          console.log(formName.url)
-          toolMockServerAddMock(formName.url, formName.methods, Number(formName.availabled), formName.delay, formName.code, formName.remark).then((response) => {
-            response = response.data;
-            if (response.success === true) {
-              this.$message({type: 'success',message: '添加成功'});
-              this.$router.replace('/tool/mock-server')
-            }
-          }).catch(err => {
-            // 对于200之外的错误status，需要添加err获取接口数据
-            this.$message({type: 'error',message: err.response.data.error_message})
-            })
-        }else {
-          return false;
-        }
-      })
-    },
-
-    cancel() {
-      this.$message({type: 'info',message: '取消添加'})
-      this.$router.replace('/tool/mock-server')
-    },
-
     getConfigs() {
       toolMockServerGetConfigs().then((response) => {
         response = response.data;
@@ -106,14 +80,82 @@ export default {
         this.$message({type: 'error',message: err.response.data.error_message})
       })
     },
+
+    getResponseCode(){
+      toolMockServerGetRespList(this.mock_id).then((response) => {
+        response = response.data;
+        if (response.success === true) {
+          var resp_code = new Array()
+          for(var i=0;i<response.data.length;i++){
+            var data = response.data[i].resp_code
+            resp_code.push({
+              "label": data,
+              "value": data,
+            }
+          )}
+          this.codes = resp_code
+        }
+      }).catch(err => {
+        // 对于200之外的错误status，需要添加err获取接口数据
+        this.$message({type: 'error',message: err.response.data.error_message})
+      })
+    },
+
+    getData(){
+      toolMockServerGetMock(this.mock_id).then((response) => {
+        response = response.data;
+        if (response.success === true) {
+          var data = response.data
+          var form = {
+            url: data.url,
+            methods: data.method,
+            availabled: String(data.is_available),
+            delay: data.delay,
+            code: data.resp_code,
+            remark: data.remark
+          }
+          this.form = form
+        }
+      }).catch(err => {
+        // 对于200之外的错误status，需要添加err获取接口数据
+        this.$message({type: 'error',message: err.response.data.error_message})
+      })
+    },
+
+    createSubmit(formName) {
+      this.$refs['form'].validate((valid) => {
+        // 根据表单格式验证规则，触发验证行为，valid为验证结果
+        if (valid) {
+          toolMockServerUpdateMock(this.mock_id, formName.url, formName.methods, Number(formName.availabled), formName.delay, formName.code, formName.remark).then((response) => {
+            response = response.data;
+            if (response.success === true) {
+              this.$message({type: 'success',message: '修改成功'});
+              this.$router.replace('/tool/mock-server')
+            }
+          }).catch(err => {
+            // 对于200之外的错误status，需要添加err获取接口数据
+            this.$message({type: 'error',message: err.response.data.error_message})
+            })
+        }else {
+          return false;
+        }
+      })
+    },
+
+    cancel() {
+      this.reload()
+    },
   },
   // 进入页面默认执行的钩子函数
   mounted () {
     this.getConfigs()
+    this.getData()
+    this.getResponseCode()
   },
 
   data() {
     return {
+      mock_id: Number(this.$route.params.id),
       methods: '',
       codes: '',
       form: {
@@ -133,8 +175,10 @@ export default {
           {required: true, message: '请选择请求方式'},
         availabled: 
           {required: true, message: '请选择是否启用'},
-        delay: 
-          {required: true, message: '响应延时时间不能为空'},
+        delay:[
+          {required: true, message: '响应延时不能为空'},
+          {type: 'number', message: '响应延时必须为数字'}
+          ],
         code: 
           {required: true, message: '请选择默认响应代码'},
         remark: 
