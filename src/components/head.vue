@@ -4,6 +4,9 @@
       <el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item v-for="(item, index) in $route.meta" :key="index">{{item}}</el-breadcrumb-item>
     </el-breadcrumb>
+    <div class="avatar">
+      <el-avatar :size="40" icon="el-icon-user-solid"></el-avatar>
+    </div>
   </div>
 </template>
 
@@ -21,9 +24,15 @@ export default {
     display: flex;
     /* width: 100%; */
   }
+
   .el-breadcrumb {
     font-size: 13px;
     line-height: 1;
     padding-left: 25px;
+    position:absolute;
+  }
+
+  .avatar{
+  margin-left: 90%;
   }
 </style>

@@ -4,7 +4,7 @@
     <div style="margin-top: 30px"></div>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="Mock详情" name="first"><detail></detail></el-tab-pane>
-      <el-tab-pane label="响应配置" name="second"><response></response></el-tab-pane>
+      <el-tab-pane label="Response配置" name="second"><response></response></el-tab-pane>
     </el-tabs>
   </div>
 </template>

@@ -130,7 +130,7 @@ export default {
       resultNum:false,
       resultContentShow: false,
     }
-  },
+  }
 }
 </script>
       

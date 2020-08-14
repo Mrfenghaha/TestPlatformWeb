@@ -37,12 +37,12 @@
       </el-form-item>
       <el-form-item label="接口描述" prop="remark">
         <el-input
-              type="textarea"
-              :rows="3"
-              placeholder="请输入接口描述内容"
-              v-model="form.remark"
-              autocomplete="off">
-            </el-input>
+          type="textarea"
+          :rows="3"
+          placeholder="请输入接口描述内容"
+          v-model="form.remark"
+          autocomplete="off">
+        </el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="createSubmit(form)">保存</el-button>
@@ -143,7 +143,8 @@ export default {
     },
 
     cancel() {
-      this.reload()
+      this.$message({type: 'info',message: '取消编辑'});
+      this.$router.replace('/tool/mock-server')
     },
   },
   // 进入页面默认执行的钩子函数
@@ -190,9 +191,9 @@ export default {
 </script>
 
 <style>
-  .detail {
+.detail {
   margin-left: 15%;
   margin-right: 20%;
   margin-top: 2%;
-  }
+}
 </style>
