@@ -183,7 +183,8 @@ export default {
               if (response.success == true) {
                 this.openDialog = false;
                 // 编辑成功后，仍停留在该页，需要使用当前页码获取数据，刷新显示
-                this.getDataPageChange (this.val)
+                console.log(this.val)
+                this.getDataPageChange(this.val)
                 this.submitUpdateForm('form')
               }
               }).catch(err => {
@@ -222,6 +223,8 @@ export default {
 
   data() {
     return {
+      // 列表页码初始
+      val : 1,
       // 列表数据初始值
       tableData: [],
       // 列表总数初始值

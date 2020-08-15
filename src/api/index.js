@@ -228,10 +228,13 @@ export const toolMockServerUpdateResp= (id, mock_id, resp_code, resp_status, res
   })
 }
 
-export const toolMockServerDelResp = (id) => {
+export const toolMockServerDelResp = (mock_id, id) => {
   return axios.request({
       method: 'DELETE',
       url: '/tool/mock_server/delete_response',
-      data: {"id": id}
+      data: {
+        "mock_id": mock_id,
+        "id": id
+      }
   })
 }

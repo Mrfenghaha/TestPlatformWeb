@@ -1,5 +1,5 @@
 <template>
-  <div class='detail'>
+  <div class='detail_page'>
     <el-form :model="form" :rules="rules" ref="form" label-width="120px">
       <el-form-item label="URL" prop="url">
         <el-input v-model="form.url">
@@ -156,9 +156,13 @@ export default {
 
   data() {
     return {
+      // 当前mock的id
       mock_id: Number(this.$route.params.id),
+      // 请求方式列表初始值
       methods: '',
+      // 请求响应列表初始值
       codes: '',
+      // mock表单初始值
       form: {
         url: '',
         methods: '',
@@ -191,7 +195,7 @@ export default {
 </script>
 
 <style>
-.detail {
+.detail_page {
   margin-left: 15%;
   margin-right: 20%;
   margin-top: 2%;
