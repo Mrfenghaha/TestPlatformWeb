@@ -21,7 +21,7 @@
           :show-overflow-tooltip="true">
         </el-table-column>
         <el-table-column
-          prop="method"
+          prop="methods"
           label="请求方式"
           width="80"
           :show-overflow-tooltip="true">
@@ -138,8 +138,8 @@ export default {
         if (response.success === true) {
           // 从接口获取的list数据，循环获取进行处理后，写入methods中，用于请求选择项
           var method = new Array()
-          for(var i=0;i<response.data.method.length;i++){
-            var data = response.data.method[i]
+          for(var i=0;i<response.data.methods.length;i++){
+            var data = response.data.methods[i]
             method.push({
               "label": data,
               "value": data,
@@ -174,7 +174,7 @@ export default {
               table_data.push({
                 "id": data.id,
                 "url": url,
-                "method": data.method,
+                "methods": data.methods,
                 "availabled": availabled,
                 "delay": data.delay,
                 "remark": data.remark,

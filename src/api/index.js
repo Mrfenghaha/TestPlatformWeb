@@ -155,7 +155,7 @@ export const toolMockServerAddMock = (url, methods, is_available, delay, remark)
     })
 }
 
-export const toolMockServerUpdateMock= (id, url, methods, is_available, delay, resp_code, remark) => {
+export const toolMockServerUpdateMock= (id, url, methods, is_available, delay, default_resp_id, remark) => {
     return axios.request({
         method: 'PUT',
         url: '/tool/mock_server/update_mock',
@@ -165,7 +165,7 @@ export const toolMockServerUpdateMock= (id, url, methods, is_available, delay, r
             "methods": methods,
             "is_available": is_available,
             "delay": delay,
-            "resp_code": resp_code,
+            "default_resp_id": default_resp_id,
             "remark": remark
         }
     })
@@ -197,32 +197,32 @@ export const toolMockServerGetRespList = (mock_id) => {
   })
 }
 
-export const toolMockServerAddResp = (mock_id, resp_code, resp_status, resp_headers, resp_body, remark) => {
+export const toolMockServerAddResp = (mock_id, name, status, headers, body, remark) => {
   return axios.request({
       method: 'POST',
       url: '/tool/mock_server/add_response',
       data: {
           "mock_id": mock_id,
-          "resp_code": resp_code,
-          "resp_status": resp_status,
-          "resp_headers": resp_headers,
-          "resp_body": resp_body,
+          "name": name,
+          "status": status,
+          "headers": headers,
+          "body": body,
           "remark": remark
       }
   })
 }
 
-export const toolMockServerUpdateResp= (id, mock_id, resp_code, resp_status, resp_headers, resp_body, remark) => {
+export const toolMockServerUpdateResp= (id, mock_id, name, status, headers, body, remark) => {
   return axios.request({
       method: 'PUT',
       url: '/tool/mock_server/update_response',
       data: {
           "id": id,
           "mock_id": mock_id,
-          "resp_code": resp_code,
-          "resp_status": resp_status,
-          "resp_headers": resp_headers,
-          "resp_body": resp_body,
+          "name": name,
+          "status": status,
+          "headers": headers,
+          "body": body,
           "remark": remark
       }
   })

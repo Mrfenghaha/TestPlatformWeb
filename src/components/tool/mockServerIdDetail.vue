@@ -25,10 +25,10 @@
       <el-form-item label="响应延时(ms)" prop="delay">
         <el-input v-model.number="form.delay"></el-input>
       </el-form-item>
-      <el-form-item label="默认响应代码" prop="code">
-        <el-select style="width: 100%" v-model="form.code" placeholder="请选择默认响应代码">
+      <el-form-item label="默认响应代码" prop="resp_id">
+        <el-select style="width: 100%" v-model="form.resp_id" placeholder="请选择默认响应代码">
           <el-option
-            v-for="item in codes"
+            v-for="item in responses"
             :label="item.label"
             :key="item.value"
             :value="item.value">
@@ -66,8 +66,8 @@ export default {
         if (response.success === true) {
           // 从接口获取的list数据，循环获取进行处理后，写入methods中，用于请求选择项
           var method = new Array()
-          for(var i=0;i<response.data.method.length;i++){
-            var data = response.data.method[i]
+          for(var i=0;i<response.data.methods.length;i++){
+            var data = response.data.methods[i]
             method.push({
               "label": data,
               "value": data,
@@ -81,19 +81,20 @@ export default {
       })
     },
 
-    getResponseCode(){
+    getResponses(){
       toolMockServerGetRespList(this.mock_id).then((response) => {
         response = response.data;
         if (response.success === true) {
-          var resp_code = new Array()
+          var responses = new Array()
           for(var i=0;i<response.data.length;i++){
-            var data = response.data[i].resp_code
-            resp_code.push({
-              "label": data,
-              "value": data,
+            var name = response.data[i].name
+            var id = response.data[i].id
+            responses.push({
+              "label": name,
+              "value": id,
             }
           )}
-          this.codes = resp_code
+          this.responses = responses
         }
       }).catch(err => {
         // 对于200之外的错误status，需要添加err获取接口数据
@@ -108,11 +109,11 @@ export default {
           var data = response.data
           var form = {
             url: data.url,
-            methods: data.method,
+            methods: data.methods,
             availabled: String(data.is_available),
             delay: data.delay,
-            code: data.resp_code,
-            remark: data.remark
+            remark: data.remark,
+            resp_id: data.default_resp_id,
           }
           this.form = form
         }
@@ -126,7 +127,7 @@ export default {
       this.$refs['form'].validate((valid) => {
         // 根据表单格式验证规则，触发验证行为，valid为验证结果
         if (valid) {
-          toolMockServerUpdateMock(this.mock_id, formName.url, formName.methods, Number(formName.availabled), formName.delay, formName.code, formName.remark).then((response) => {
+          toolMockServerUpdateMock(this.mock_id, formName.url, formName.methods, Number(formName.availabled), formName.delay, formName.resp_id, formName.remark).then((response) => {
             response = response.data;
             if (response.success === true) {
               this.$message({type: 'success',message: '修改成功'});
@@ -151,7 +152,7 @@ export default {
   mounted () {
     this.getConfigs()
     this.getData()
-    this.getResponseCode()
+    this.getResponses()
   },
 
   data() {
@@ -161,15 +162,15 @@ export default {
       // 请求方式列表初始值
       methods: '',
       // 请求响应列表初始值
-      codes: '',
+      responses: '',
       // mock表单初始值
       form: {
         url: '',
         methods: '',
         availabled: '',
         delay: '',
-        code: '',
-        remark: ''
+        remark: '',
+        resp_id: '',
       },
       rules: {
         url: [
@@ -184,10 +185,10 @@ export default {
           {required: true, message: '响应延时不能为空'},
           {type: 'number', message: '响应延时必须为数字'}
           ],
-        code: 
-          {required: true, message: '请选择默认响应代码'},
         remark: 
-          {required: true, message: '请选择默认响应代码'}
+          {required: true, message: '请选择默认响应代码'},
+        resp_id: 
+          {required: true, message: '请选择默认响应名称'},
       }
     }
   }
