@@ -24,11 +24,14 @@
               </el-col>
               <el-col :span="16" style="text-align:left;">
                 <div v-if="form.cardEditMode">
-                  <el-input class="response_title response_name" v-model="form.name" placeholder="请输入名称"></el-input>
+                  <div class="response_name">
+                  <el-form-item prop="name" label-width="0px"
+                    :rules="[{required: true, message: '请输入Response名称'},{max: 64, message: '最多可输入64个字符'}]">
+                    <el-input class="response_title" v-model="form.name" placeholder="请输入名称"></el-input>
+                  </el-form-item>
+                  </div>
                 </div>
-                <div v-if="!form.cardEditMode" class="response_title">
-                  {{form.name}}
-                </div>
+                <div v-if="!form.cardEditMode" class="response_title text_one">{{form.name}}</div>
               </el-col>
               <el-col :span="4">
                 <div v-if="!form.cardEditMode">
@@ -53,15 +56,13 @@
                   <div class="text_one" >{{form.remark}}</div>
                 </el-tooltip>
               </el-form-item>
-              <el-form-item class="response_space" label="状态码">
-                {{form.status}}
-              </el-form-item>
-              <el-form-item class="response_space" label="Headers">
+              <el-form-item label="状态码">{{form.status}}</el-form-item>
+              <el-form-item label="Headers">
                 <el-tooltip class="item" width="800" effect="dark" :content="form.headers" placement="top-start">
                   <div class="text_one" >{{form.headers}}</div>
                 </el-tooltip>
               </el-form-item>
-              <el-form-item class="response_space" style="height=80px" label="Body">
+              <el-form-item style="height=80px" label="Body">
                 <el-popover
                   placement="top-start"
                   width="600"
@@ -87,10 +88,10 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item class="response_space" label="Headers" prop="headers">
+              <el-form-item label="Headers" prop="headers">
                 <el-input v-model="form.headers" placeholder="请输入Response的Headers"></el-input>
               </el-form-item>
-              <el-form-item class="response_space" label="Body" prop="body">
+              <el-form-item label="Body" prop="body">
                 <el-input
                   type="textarea"
                   :rows="3"
@@ -340,9 +341,8 @@ export default {
 }
 
 .response_name{
-  /* line-height:20px; */
-  margin-top: -1.5%;
-  margin-bottom: -1.5%;
+  margin-top: -2%;
+  margin-bottom: -8%;
 }
 
 .el-popover{
@@ -351,10 +351,6 @@ white-space: pre-wrap;
 
 .icon{
   font-size: 17px;
-}
-
-.response_space{
-  /* margin-top: -2%; */
 }
 
 .text_one{
