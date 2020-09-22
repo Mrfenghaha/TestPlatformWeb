@@ -25,7 +25,7 @@
       <el-form-item label="响应延时(ms)" prop="delay">
         <el-input v-model.number="form.delay"></el-input>
       </el-form-item>
-      <el-form-item label="默认响应代码" prop="resp_id">
+      <el-form-item label="默认响应" prop="resp_id">
         <el-select style="width: 100%" v-model="form.resp_id" placeholder="请选择默认响应代码">
           <el-option
             v-for="item in responses"
