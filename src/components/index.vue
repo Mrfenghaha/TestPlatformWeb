@@ -109,22 +109,22 @@ export default {
 </script>
 
 <style>
-  .side-nav{
-    height: 100%;}
-  .el-menu-vertical-back:not(.el-menu--collapse) {
-    /*width: 200px;*/
-    min-height: 100%;
-  }
-  .el-menu{
-    border-right: none;}
-  .el-menu-vertical-back{text-align: left;min-height: 100%;}
-  /* 背景颜色，会影响其他设置，顾设为无色 */
-  .is-active{background-color: transparent !important;}
-  .el-submenu .el-menu-item {min-width: 50px !important;}
+.side-nav{
+  height: 100%;}
+.el-menu-vertical-back:not(.el-menu--collapse) {
+  width: 100%;
+  min-height: 100%;
+}
+.el-menu{
+  border-right: none;}
+.el-menu-vertical-back{text-align: left;min-height: 100%;}
+/* 背景颜色，会影响其他设置，顾设为无色 */
+.is-active{background-color: transparent !important;}
+.el-submenu .el-menu-item {min-width: 50px !important;}
 
-  .page {
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-top: 2%;
-  }
+.page {
+margin-left: 10%;
+margin-right: 10%;
+margin-top: 2%;
+}
 </style>

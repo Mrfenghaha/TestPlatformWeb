@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import {toolMockServerGetConfigs, toolMockServerGetMock, toolMockServerUpdateMock, toolMockServerGetRespList} from '../../api'
+import {toolMockServerGetConfigs, toolMockServerGetMock, toolMockServerUpdateMock, toolMockServerGetRespList} from '../../api/tool/mockServer'
 
 export default {
   name: "mockServerDetail",

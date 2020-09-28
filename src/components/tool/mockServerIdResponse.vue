@@ -6,7 +6,7 @@
         ref="popover"
         placement="right"
         title="替换参数说明"
-        width="190"
+        width="300"
         trigger="hover"
         :content="params">
       </el-popover>
@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import {toolMockServerGetConfigs, toolMockServerGetRespList, toolMockServerAddResp, toolMockServerUpdateResp, toolMockServerDelResp} from '../../api'
+import {toolMockServerGetConfigs, toolMockServerGetRespList, toolMockServerAddResp, toolMockServerUpdateResp, toolMockServerDelResp} from '../../api/tool/mockServer'
 
 export default {
   name: "mockServerResponse",
@@ -152,7 +152,7 @@ export default {
         list.push(cardEditMode)
       }
       if(this.data_count(list).true == undefined){
-        this.forms.push({id: '', name: '', remark: '', status: '', headers: '{}', body: '{}', cardEditMode: true});
+        this.forms.push({id: '', name: '', remark: '', status: '', headers: '{"content-type": "application/json"}', body: '{}', cardEditMode: true});
       }else{
         this.$message({type: 'error', message: '请保存后再进行操作'});
       }
@@ -295,7 +295,7 @@ export default {
         name: '',
         remark: '',
         status: '',
-        headers: '{}',
+        headers: '{"content-type": "application/json"}',
         body: '{}',
         // card编辑状态初始值
         cardEditMode: false
@@ -341,7 +341,7 @@ export default {
 }
 
 .response_name{
-  margin-top: -2%;
+  margin-top: -1.5%;
   margin-bottom: -8%;
 }
 

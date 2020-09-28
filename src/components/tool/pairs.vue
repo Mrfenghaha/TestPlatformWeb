@@ -48,7 +48,7 @@
 </template>
   
 <script>
-import {toolOrthogonal} from '../../api'
+import {toolPairs} from '../../api/tool/pairs'
 
 export default {
   name: "pairs",
@@ -77,7 +77,7 @@ export default {
               var domain = this.form.domains[i]
               conds.push(domain.value.replace(/，/g,",").split(","))
               }
-            toolOrthogonal(conds).then((response) => {
+            toolPairs(conds).then((response) => {
               response = response.data;
               if (response.success === true) {
                 var pairs = new String();
@@ -144,11 +144,11 @@ export default {
 
   .pair_input_text{
     position:absolute;
-    width: 35.2%;
+    width: 35%;
   }
 
   .pair_input_box{
-    margin-left: 3%
+    margin-left: 4.5%
   }
 
   .pair_input_add{

@@ -125,7 +125,7 @@
 </template>
 
 <script>
-import {toolMockServerGetMockList, toolMockServerAddMock, toolMockServerDelMock, toolMockServerGetConfigs} from '../../api'
+import {toolMockServerGetMockList, toolMockServerAddMock, toolMockServerDelMock, toolMockServerGetConfigs} from '../../api/tool/mockServer'
 
 export default {
   name: "mockServer",
@@ -304,5 +304,9 @@ export default {
   margin-right: 75px;
   margin-top: 20px
 }
+
+.el-tooltip__popper {
+    max-width: 500px;
+  }
 
 </style>

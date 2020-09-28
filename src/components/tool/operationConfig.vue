@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import {toolDBOperGetOperList, toolDBOperAddOper, toolDBOperUpdateOper, toolDBOperDelOper} from '../../api'
+import {toolDBOperGetOperList, toolDBOperAddOper, toolDBOperUpdateOper, toolDBOperDelOper} from '../../api/tool/dbOperation'
 
 export default {
   name: "operationConfigs",

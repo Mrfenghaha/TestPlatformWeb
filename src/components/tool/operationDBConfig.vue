@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import {toolDBOperGetConfigList, toolDBOperAddConfig, toolDBOperUpdateConfig, toolDBOperDelConfig} from '../../api'
+import {toolDBOperGetConfigList, toolDBOperAddConfig, toolDBOperUpdateConfig, toolDBOperDelConfig} from '../../api/tool/dbOperation'
 
 export default {
   name: "operationDBConfigs",

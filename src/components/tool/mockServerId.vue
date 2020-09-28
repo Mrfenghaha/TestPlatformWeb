@@ -12,7 +12,7 @@
 <script>
 import mockServerDetail from './mockServerIdDetail'
 import mockServerResponse from './mockServerIdResponse'
-import {toolMockServerGetMock} from '../../api'
+import {toolMockServerGetMock} from '../../api/tool/mockServer'
 export default {
   name: "MockServerId",
   components: {
