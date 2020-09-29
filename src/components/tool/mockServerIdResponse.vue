@@ -223,35 +223,41 @@ export default {
     },
 
     saveSubmit(FormName){
-      if(FormName.headers == ""){var headers = '{}'}
-      else{var headers = FormName.headers}
-      
-      if(FormName.body == ""){var body = '{}'}
-      else{var body = FormName.body}
+      // this.$refs[FormName].validate((valid) => {
+      //   if (valid) {
+          if(FormName.headers == ""){var headers = '{}'}
+          else{var headers = FormName.headers}
+          
+          if(FormName.body == ""){var body = '{}'}
+          else{var body = FormName.body}
 
-      if(FormName.id == ''){
-        toolMockServerAddResp(this.mock_id, FormName.name, FormName.status, headers, body, FormName.remark).then((response) => {
-          response = response.data;
-          if (response.success === true) {
-            this.reload()
-            this.$message({type: 'success', message: '添加成功!'});
+          if(FormName.id == ''){
+            toolMockServerAddResp(this.mock_id, FormName.name, FormName.status, headers, body, FormName.remark).then((response) => {
+              response = response.data;
+              if (response.success === true) {
+                this.reload()
+                this.$message({type: 'success', message: '添加成功!'});
+              }
+            }).catch(err => {
+              // 对于200之外的错误status，需要添加err获取接口数据
+              this.$message({type: 'error',message: err.response.data.error_message})
+            })
+          }else{
+            toolMockServerUpdateResp(FormName.id, this.mock_id, FormName.name, FormName.status, headers, body, FormName.remark).then((response) => {
+              response = response.data;
+              if (response.success === true) {
+                this.reload()
+                this.$message({type: 'success', message: '修改成功!'});
+              }
+            }).catch(err => {
+              // 对于200之外的错误status，需要添加err获取接口数据
+              this.$message({type: 'error',message: err.response.data.error_message})
+            })
           }
-        }).catch(err => {
-          // 对于200之外的错误status，需要添加err获取接口数据
-          this.$message({type: 'error',message: err.response.data.error_message})
-        })
-      }else{
-        toolMockServerUpdateResp(FormName.id, this.mock_id, FormName.name, FormName.status, headers, body, FormName.remark).then((response) => {
-          response = response.data;
-          if (response.success === true) {
-            this.reload()
-            this.$message({type: 'success', message: '修改成功!'});
-          }
-        }).catch(err => {
-          // 对于200之外的错误status，需要添加err获取接口数据
-          this.$message({type: 'error',message: err.response.data.error_message})
-        })
-      }
+      //   }else {
+      //     return false;
+      //   }
+      // })
     },
     // 计算元素在list中出现的次数
     data_count(data){

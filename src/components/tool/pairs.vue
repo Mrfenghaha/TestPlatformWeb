@@ -67,52 +67,52 @@ export default {
       }
     },
     submitForm() {
-        this.$refs['form'].validate((valid) => {
-          if (valid) {
-            var conds = new Array();
-            // 传入第一行内容
-            conds.push(this.form.cond.replace(/，/g,",").split(","))
-            // 传入剩下的所有行
-            for(var i=0;i<this.form.domains.length;i++){
-              var domain = this.form.domains[i]
-              conds.push(domain.value.replace(/，/g,",").split(","))
-              }
-            toolPairs(conds).then((response) => {
-              response = response.data;
-              if (response.success === true) {
-                var pairs = new String();
-                for(var i=0;i<response.data.pairs.length;i++){
-                  var pair = response.data.pairs[i]
-                  pairs += '[' + String(pair) + ']\n'
-                  }
-                this.result = {"num": response.data.num ,"content": pairs}
-                this.resultNumName = true
-                this.resultNum = true
-                this.resultContentShow = true
-              }
-            }).catch(err => {
-            this.$message({type: 'error',message: err.response.data.error_message})
-            })
-          } else {
-            return false;
-          }
-        });
-      },
-      resetForm() {
-        this.reload()
-      },
-      removeDomain(item) {
-        var index = this.form.domains.indexOf(item)
-        if (index !== -1) {
-          this.form.domains.splice(index, 1)
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          var conds = new Array();
+          // 传入第一行内容
+          conds.push(this.form.cond.replace(/，/g,",").split(","))
+          // 传入剩下的所有行
+          for(var i=0;i<this.form.domains.length;i++){
+            var domain = this.form.domains[i]
+            conds.push(domain.value.replace(/，/g,",").split(","))
+            }
+          toolPairs(conds).then((response) => {
+            response = response.data;
+            if (response.success === true) {
+              var pairs = new String();
+              for(var i=0;i<response.data.pairs.length;i++){
+                var pair = response.data.pairs[i]
+                pairs += '[' + String(pair) + ']\n'
+                }
+              this.result = {"num": response.data.num ,"content": pairs}
+              this.resultNumName = true
+              this.resultNum = true
+              this.resultContentShow = true
+            }
+          }).catch(err => {
+          this.$message({type: 'error',message: err.response.data.error_message})
+          })
+        } else {
+          return false;
         }
-      },
-      addDomain() {
-        this.form.domains.push({
-          value: '',
-          key: Date.now()
-        });
+      });
+    },
+    resetForm() {
+      this.reload()
+    },
+    removeDomain(item) {
+      var index = this.form.domains.indexOf(item)
+      if (index !== -1) {
+        this.form.domains.splice(index, 1)
       }
+    },
+    addDomain() {
+      this.form.domains.push({
+        value: '',
+        key: Date.now()
+      });
+    }
   },
   
   data() {
