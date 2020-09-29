@@ -42,7 +42,7 @@
                 </div>
                 <div v-if="form.cardEditMode">
                   <el-row>
-                    <el-col :span="12"><el-link class="response_cancel" @click="cancelSubmit(form)">取消</el-link></el-col>
+                    <el-col :span="12"><el-link class="response_cancel" @click="cancelSubmit()">取消</el-link></el-col>
                     <el-col :span="12"><el-link class="response_save" @click="saveSubmit(form)">保存</el-link></el-col>
                   </el-row>
                 </div>
@@ -222,8 +222,8 @@ export default {
       this.$message({type: 'info', message: '已取消修改'});
     },
 
-    saveSubmit(FormName){
-      // this.$refs[FormName].validate((valid) => {
+    saveSubmit(FormName, i){
+      // this.$refs[FormName][i].validate((valid) => {
       //   if (valid) {
           if(FormName.headers == ""){var headers = '{}'}
           else{var headers = FormName.headers}

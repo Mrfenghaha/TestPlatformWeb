@@ -96,7 +96,7 @@
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button @click="openDialog = false;resetForm('form')">取 消</el-button>
-          <el-button type="primary" @click="submitForm(form)">确 定</el-button>
+          <el-button type="primary" @click="submitForm('form')">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -174,7 +174,7 @@ export default {
     },
 
     submitForm(formName) {
-      this.$refs['form'].validate((valid) => {
+      this.$refs[formName].validate((valid) => {
         // 根据表单格式验证规则，触发验证行为，valid为验证结果
         if (valid) {
           if (this.DialogTitle == '添加数据库'){

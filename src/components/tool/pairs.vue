@@ -66,8 +66,8 @@ export default {
         }
       }
     },
-    submitForm() {
-      this.$refs['form'].validate((valid) => {
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           var conds = new Array();
           // 传入第一行内容

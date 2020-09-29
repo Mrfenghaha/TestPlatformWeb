@@ -45,7 +45,7 @@
         </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="createSubmit(form)">保存</el-button>
+        <el-button type="primary" @click="createSubmit('form')">保存</el-button>
         <el-button @click="cancel()">取消</el-button>
       </el-form-item>
     </el-form>
@@ -124,7 +124,7 @@ export default {
     },
 
     createSubmit(formName) {
-      this.$refs['form'].validate((valid) => {
+      this.$refs[formName].validate((valid) => {
         // 根据表单格式验证规则，触发验证行为，valid为验证结果
         if (valid) {
           toolMockServerUpdateMock(this.mock_id, formName.url, formName.methods, Number(formName.availabled), formName.delay, formName.resp_id, formName.remark).then((response) => {
