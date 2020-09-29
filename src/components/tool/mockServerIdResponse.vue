@@ -222,7 +222,7 @@ export default {
       this.$message({type: 'info', message: '已取消修改'});
     },
 
-    saveSubmit(FormName, i){
+    saveSubmit(FormName){
       // this.$refs[FormName][i].validate((valid) => {
       //   if (valid) {
           if(FormName.headers == ""){var headers = '{}'}
