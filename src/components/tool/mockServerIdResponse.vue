@@ -15,7 +15,7 @@
       </el-link>
     </div>
     <div v-for="(form, i) in forms" :key="i">
-      <el-form :model="form" ref="form" label-width="80px">
+      <el-form :model="form" :ref="`form${i}`" label-width="80px">
         <el-card class="response_card">
           <div slot="header" class="clearfix">
             <el-row>
@@ -43,7 +43,7 @@
                 <div v-if="form.cardEditMode">
                   <el-row>
                     <el-col :span="12"><el-link class="response_cancel" @click="cancelSubmit()">取消</el-link></el-col>
-                    <el-col :span="12"><el-link class="response_save" @click="saveSubmit(form)">保存</el-link></el-col>
+                    <el-col :span="12"><el-link class="response_save" @click="saveSubmit(`form${i}`, i)">保存</el-link></el-col>
                   </el-row>
                 </div>
               </el-col>
@@ -222,17 +222,18 @@ export default {
       this.$message({type: 'info', message: '已取消修改'});
     },
 
-    saveSubmit(FormName){
-      // this.$refs[FormName][i].validate((valid) => {
-      //   if (valid) {
-          if(FormName.headers == ""){var headers = '{}'}
-          else{var headers = FormName.headers}
+    saveSubmit(FormName,i){
+      var formData = this.forms[i]
+      this.$refs[FormName][0].validate((valid) => {
+        if (valid) {
+          if(formData.headers == ""){var headers = '{}'}
+          else{var headers = formData.headers}
           
-          if(FormName.body == ""){var body = '{}'}
-          else{var body = FormName.body}
+          if(formData.body == ""){var body = '{}'}
+          else{var body = formData.body}
 
-          if(FormName.id == ''){
-            toolMockServerAddResp(this.mock_id, FormName.name, FormName.status, headers, body, FormName.remark).then((response) => {
+          if(formData.id == ''){
+            toolMockServerAddResp(this.mock_id, formData.name, formData.status, headers, body, formData.remark).then((response) => {
               response = response.data;
               if (response.success === true) {
                 this.reload()
@@ -243,7 +244,7 @@ export default {
               this.$message({type: 'error',message: err.response.data.error_message})
             })
           }else{
-            toolMockServerUpdateResp(FormName.id, this.mock_id, FormName.name, FormName.status, headers, body, FormName.remark).then((response) => {
+            toolMockServerUpdateResp(formData.id, this.mock_id, formData.name, formData.status, headers, body, formData.remark).then((response) => {
               response = response.data;
               if (response.success === true) {
                 this.reload()
@@ -254,10 +255,10 @@ export default {
               this.$message({type: 'error',message: err.response.data.error_message})
             })
           }
-      //   }else {
-      //     return false;
-      //   }
-      // })
+        }else {
+          return false;
+        }
+      })
     },
     // 计算元素在list中出现的次数
     data_count(data){
