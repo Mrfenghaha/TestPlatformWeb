@@ -89,13 +89,14 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="Headers" prop="headers">
-                <el-input v-model="form.headers" placeholder="请输入Response的Headers"></el-input>
+                <el-input v-model="form.headers" placeholder="请输入Response的Headers,Json格式"></el-input>
               </el-form-item>
-              <el-form-item label="Body" prop="body">
+              <el-form-item label="Body" prop="body"
+                :rules="{required: true, validator: isJson}">
                 <el-input
                   type="textarea"
                   :rows="3"
-                  placeholder="请输入Response的Body"
+                  placeholder="请输入Response的Body,Json格式"
                   v-model="form.body"
                   autocomplete="off">
                 </el-input>
@@ -109,7 +110,50 @@
 </template>
 
 <script>
+import { toolDBOperExOper } from '../../api/tool/dbOperation';
 import {toolMockServerGetConfigs, toolMockServerGetRespList, toolMockServerAddResp, toolMockServerUpdateResp, toolMockServerDelResp} from '../../api/tool/mockServer'
+
+// 计算元素在list中出现的次数
+export function dataCount(data){
+  var map = {};
+  var i = 0, len = data .length;
+  //循环查找
+  for (; i < len; i++) {
+    //数组里的i个元素
+      var v = data [i];
+      //将数组的i个元素作为map对象的属性查看其属性值
+      var counts = map[v];
+      //如果map对象没有该属性，则设置该属性的值为1，有的话在其基础上再+1
+      if (counts) {
+          map[v] += 1;
+      } else {
+          map[v] = 1;
+      }
+  }
+  return map
+}
+
+// 判断Body格式
+const isJson = (rule, value, callback) => {
+  if (!value) {
+    return callback(new Error('请输入Body响应体'))
+  }else{
+    callback();
+  }
+  // 判断输入值是否是json格式，由于替换参数原因正确输入有时也无法满足json格式
+  // else{
+  //   try {
+  //     var obj=JSON.parse(value);
+  //     if(typeof obj == 'object' && obj ){
+  //       callback();
+  //     }else{
+  //       return callback(new Error('只支持json格式输入'))
+  //     }
+  //   } catch(e) {
+  //     return callback(new Error('只支持json格式输入'))
+  //   }
+  // }
+}
 
 export default {
   name: "mockServerResponse",
@@ -151,7 +195,7 @@ export default {
         var cardEditMode = this.forms[i].cardEditMode
         list.push(cardEditMode)
       }
-      if(this.data_count(list).true == undefined){
+      if(dataCount(list).true == undefined){
         this.forms.push({id: '', name: '', remark: '', status: '', headers: '{"content-type": "application/json"}', body: '{}', cardEditMode: true});
       }else{
         this.$message({type: 'error', message: '请保存后再进行操作'});
@@ -190,7 +234,7 @@ export default {
         var cardEditMode = this.forms[i].cardEditMode
         list.push(cardEditMode)
       }
-      if(this.data_count(list).true == undefined){
+      if(dataCount(list).true == undefined){
         FormName.cardEditMode = true
       }else{
         this.$message({type: 'error', message: '请保存后再进行操作'});
@@ -259,25 +303,6 @@ export default {
           return false;
         }
       })
-    },
-    // 计算元素在list中出现的次数
-    data_count(data){
-      var map = {};
-      var i = 0, len = data .length;
-      //循环查找
-      for (; i < len; i++) {
-        //数组里的i个元素
-          var v = data [i];
-          //将数组的i个元素作为map对象的属性查看其属性值
-          var counts = map[v];
-          //如果map对象没有该属性，则设置该属性的值为1，有的话在其基础上再+1
-          if (counts) {
-              map[v] += 1;
-          } else {
-              map[v] = 1;
-          }
-      }
-      return map
     }
   },
   // 进入页面默认执行的钩子函数
@@ -306,7 +331,9 @@ export default {
         body: '{}',
         // card编辑状态初始值
         cardEditMode: false
-      }]
+      }],
+      // 响应中内容是否是json格式判断
+      isJson: isJson,
     }
   }
 }
@@ -339,7 +366,7 @@ export default {
 .response_card{
   font-size: 14px;
   margin-top: 2%;
-  height: 370px;
+  height: 380px;
 }
 
 .response_title{

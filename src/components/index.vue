@@ -26,7 +26,7 @@
                   <el-menu-item index="/tool/db-operation/operation-configs">操作配置</el-menu-item>
                   <el-menu-item index="/tool/db-operation/database-configs">数据库配置</el-menu-item>
             </el-submenu>
-            <el-menu-item index="/tool/mock-server">Mock配置</el-menu-item>
+            <el-menu-item index="/tool/mock-server" :style="isActive('/tool/mock-server')">Mock配置</el-menu-item>
           </el-submenu>
           <!-- <el-submenu index="3">
             <template slot="title">
@@ -95,6 +95,12 @@ export default {
       this.$nextTick(function(){
         this.isRouterAlive = true
       })
+    },
+    // 进入详情页后主页导航栏仍为黄色，仅锁定颜色而非实际选中该导航，后期需优化
+    isActive(activeUrl) {
+      var url = require('url')
+      var a = url.parse(document.URL)
+      return a.pathname.startsWith(activeUrl) ? 'color: rgb(255, 208, 75)': ''
     }
   },
   computed: {
