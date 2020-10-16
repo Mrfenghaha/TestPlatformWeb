@@ -178,7 +178,7 @@ export default {
         // 根据表单格式验证规则，触发验证行为，valid为验证结果
         if (valid) {
           if (this.DialogTitle == '添加数据库'){
-            toolDBOperAddConfig(formName.name, formName.ip, formName.port, formName.username, formName.password, formName.remark).then((response) => {
+            toolDBOperAddConfig(this.form.name, this.form.ip, this.form.port, this.form.username, this.form.password, this.form.remark).then((response) => {
               response = response.data;
               if (response.success == true) {
                 // 创建成功后刷新页面
@@ -190,7 +190,7 @@ export default {
                 this.$message({type: 'error',message: err.response.data.error_message})
                 })
           } else {
-            toolDBOperUpdateConfig(this.tableRow.id, formName.name, formName.ip, formName.port, formName.username, formName.password, formName.remark).then((response) => {
+            toolDBOperUpdateConfig(this.tableRow.id, this.form.name, this.form.ip, this.form.port, this.form.username, this.form.password, this.form.remark).then((response) => {
               response = response.data;
               if (response.success == true) {
                 this.openDialog = false;

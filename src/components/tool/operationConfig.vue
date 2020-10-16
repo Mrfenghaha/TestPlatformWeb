@@ -166,7 +166,7 @@ export default {
         // 根据表单格式验证规则，触发验证行为，valid为验证结果
         if (valid) {
           if (this.DialogTitle == '添加操作'){
-            toolDBOperAddOper(formName.name, formName.sql, formName.remark).then((response) => {
+            toolDBOperAddOper(this.form.name, this.form.sql, this.form.remark).then((response) => {
               response = response.data;
               if (response.success == true) {
                 // 创建成功后刷新页面
@@ -178,7 +178,7 @@ export default {
                 this.$message({type: 'error',message: err.response.data.error_message})
                 })
           } else {
-            toolDBOperUpdateOper(this.tableRow.id, formName.name, formName.sql, formName.remark).then((response) => {
+            toolDBOperUpdateOper(this.tableRow.id, this.form.name, this.form.sql, this.form.remark).then((response) => {
               response = response.data;
               if (response.success == true) {
                 this.openDialog = false;

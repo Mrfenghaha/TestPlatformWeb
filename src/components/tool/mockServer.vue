@@ -215,7 +215,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         // 根据表单格式验证规则，触发验证行为，valid为验证结果
         if (valid) {
-          toolMockServerAddMock(formName.url, formName.methods, Number(formName.availabled), formName.delay, formName.remark).then((response) => {
+          toolMockServerAddMock(this.form.url, this.form.methods, Number(this.form.availabled), this.form.delay, this.form.remark).then((response) => {
             response = response.data;
             if (response.success == true) {
               // 创建成功后刷新页面

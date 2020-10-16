@@ -127,7 +127,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         // 根据表单格式验证规则，触发验证行为，valid为验证结果
         if (valid) {
-          toolMockServerUpdateMock(this.mock_id, formName.url, formName.methods, Number(formName.availabled), formName.delay, formName.resp_id, formName.remark).then((response) => {
+          toolMockServerUpdateMock(this.mock_id, this.form.url, this.form.methods, Number(this.form.availabled), this.form.delay, this.form.resp_id, this.form.remark).then((response) => {
             response = response.data;
             if (response.success === true) {
               this.$message({type: 'success',message: '修改成功'});
